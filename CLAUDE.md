@@ -1,3 +1,14 @@
+# Carborator
+
+## Tech Stack
+
+- **Language**: TypeScript
+- **Runtime / Package Manager**: Bun
+- **Output**: CLI tool (`bun build --compile` for single executable)
+- **Design Paradigm**: Object-oriented — each layer component (Manager, Engine, ResourceAccess) is a class or better each layer is a module inside which each one-eg Engine is a class. Interface will be exposed to layers above. We will use Jenkins for now as running the workflow scripts.
+
+---
+
 # System Design Principles
 ## Based on "The Method" by Juval Löwy
 
