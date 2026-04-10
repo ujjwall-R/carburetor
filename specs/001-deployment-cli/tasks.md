@@ -16,11 +16,11 @@
 
 **Purpose**: Project initialization and directory structure
 
-- [ ] T001 Initialize Bun project — run `bun init`, create `package.json`, `tsconfig.json` (strict mode, `paths` aliases) at repo root
-- [ ] T002 [P] Create full source directory tree: `src/{client,managers,engines,engines/executors,access,interfaces,models,config}/` and `tests/{unit,integration}/`
-- [ ] T003 [P] Install runtime dependencies: `commander`, `js-yaml`, `simple-git` — run `bun add commander js-yaml simple-git`
-- [ ] T004 [P] Install type declarations: `bun add -d @types/js-yaml @types/node`
-- [ ] T005 [P] Add `build` and `dev` scripts to `package.json`: `bun run src/index.ts` for dev, `bun build --compile --outfile carborator src/index.ts` for build
+- [x] T001 Initialize Bun project — run `bun init`, create `package.json`, `tsconfig.json` (strict mode, `paths` aliases) at repo root
+- [x] T002 [P] Create full source directory tree: `src/{client,managers,engines,engines/executors,access,interfaces,models,config}/` and `tests/{unit,integration}/`
+- [x] T003 [P] Install runtime dependencies: `commander`, `js-yaml`, `simple-git` — run `bun add commander js-yaml simple-git`
+- [x] T004 [P] Install type declarations: `bun add -d @types/js-yaml @types/node`
+- [x] T005 [P] Add `build` and `dev` scripts to `package.json`: `bun run src/index.ts` for dev, `bun build --compile --outfile carborator src/index.ts` for build
 
 ---
 
@@ -32,26 +32,26 @@
 
 ### Models
 
-- [ ] T006 Create all enum types (`ProjectType`, `CloudPlatform`, `VCSProvider`, `StepType`, `ExecutionStatus`, `DeploymentStatus`) in `src/models/enums.ts`
-- [ ] T007 [P] Create `DeploymentRequest`, `Project`, `BuildConfig`, `DeploymentTarget`, `VCSConfig`, `VCSCredentials`, `CSPCredentials` in `src/models/DeploymentRequest.ts`
-- [ ] T008 [P] Create `Pipeline`, `PipelineStep`, `ExecutionContext`, `StepResult`, `PipelineResult` in `src/models/Pipeline.ts`
-- [ ] T009 [P] Create `SourceArtifact`, `SourceMetadata` in `src/models/SourceArtifact.ts`
-- [ ] T010 [P] Create `DeployableArtifact` in `src/models/DeployableArtifact.ts`
-- [ ] T011 [P] Create `DeploymentOutcome`, `ShippingResult`, `ValidationResult` in `src/models/DeploymentOutcome.ts`
-- [ ] T012 [P] Create `JenkinsConfig`, `TemporalConfig` in `src/models/ExecutorConfig.ts`
+- [x] T006 Create all enum types (`ProjectType`, `CloudPlatform`, `VCSProvider`, `StepType`, `ExecutionStatus`, `DeploymentStatus`) in `src/models/enums.ts`
+- [x] T007 [P] Create `DeploymentRequest`, `Project`, `BuildConfig`, `DeploymentTarget`, `VCSConfig`, `VCSCredentials`, `CSPCredentials` in `src/models/DeploymentRequest.ts`
+- [x] T008 [P] Create `Pipeline`, `PipelineStep`, `ExecutionContext`, `StepResult`, `PipelineResult` in `src/models/Pipeline.ts`
+- [x] T009 [P] Create `SourceArtifact`, `SourceMetadata` in `src/models/SourceArtifact.ts`
+- [x] T010 [P] Create `DeployableArtifact` in `src/models/DeployableArtifact.ts`
+- [x] T011 [P] Create `DeploymentOutcome`, `ShippingResult`, `ValidationResult` in `src/models/DeploymentOutcome.ts`
+- [x] T012 [P] Create `JenkinsConfig`, `TemporalConfig` in `src/models/ExecutorConfig.ts`
 
 ### Interfaces
 
-- [ ] T013 [P] Create `IDeploymentManager` interface in `src/interfaces/IDeploymentManager.ts`
-- [ ] T014 [P] Create `IOrchestratingEngine` interface (`buildPipeline`) in `src/interfaces/IOrchestratingEngine.ts`
-- [ ] T015 [P] Create `IShippingEngine` interface (`run`, `validateCredentials`) in `src/interfaces/IShippingEngine.ts`
-- [ ] T016 [P] Create `IPipelineExecutor` interface (`execute`) in `src/interfaces/IPipelineExecutor.ts`
-- [ ] T017 [P] Create `IVCSAccess` interface (`validateCredentials`, `fetchSource`) in `src/interfaces/IVCSAccess.ts`
-- [ ] T018 [P] Create `ICSPAccess` interface (`validateCredentials`, `deploy`, `getEndpoint`) in `src/interfaces/ICSPAccess.ts`
+- [x] T013 [P] Create `IDeploymentManager` interface in `src/interfaces/IDeploymentManager.ts`
+- [x] T014 [P] Create `IOrchestratingEngine` interface (`buildPipeline`) in `src/interfaces/IOrchestratingEngine.ts`
+- [x] T015 [P] Create `IShippingEngine` interface (`run`, `validateCredentials`) in `src/interfaces/IShippingEngine.ts`
+- [x] T016 [P] Create `IPipelineExecutor` interface (`execute`) in `src/interfaces/IPipelineExecutor.ts`
+- [x] T017 [P] Create `IVCSAccess` interface (`validateCredentials`, `fetchSource`) in `src/interfaces/IVCSAccess.ts`
+- [x] T018 [P] Create `ICSPAccess` interface (`validateCredentials`, `deploy`, `getEndpoint`) in `src/interfaces/ICSPAccess.ts`
 
 ### Config Loader
 
-- [ ] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `carborator.yml` using `js-yaml`, resolves credential env vars, returns typed `CarboratorConfig`
+- [x] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `carborator.yml` using `js-yaml`, resolves credential env vars, returns typed `CarboratorConfig`
 
 **Checkpoint**: All models, interfaces, and config loader are in place. User story implementation can now begin.
 
@@ -65,34 +65,34 @@
 
 ### OrchestratingEngine
 
-- [ ] T020 [US1] Implement `OrchestratingEngine` class in `src/engines/OrchestratingEngine.ts` — implements `IOrchestratingEngine`; `buildPipeline()` detects project type from `sourceDir` (scans `package.json` for react/node), builds ordered `PipelineStep[]` for each type; pure synchronous, no I/O beyond filesystem reads
+- [x] T020 [US1] Implement `OrchestratingEngine` class in `src/engines/OrchestratingEngine.ts` — implements `IOrchestratingEngine`; `buildPipeline()` detects project type from `sourceDir` (scans `package.json` for react/node), builds ordered `PipelineStep[]` for each type; pure synchronous, no I/O beyond filesystem reads
 
 ### LocalPipelineExecutor
 
-- [ ] T021 [US1] Implement `LocalPipelineExecutor` class in `src/engines/executors/LocalPipelineExecutor.ts` — implements `IPipelineExecutor`; `execute()` runs each `PipelineStep.command` as a child process via `Bun.spawn()`; streams stdout per step; resolves with `PipelineResult { status: 'completed' | 'failed', completedSteps, artifact }`
+- [x] T021 [US1] Implement `LocalPipelineExecutor` class in `src/engines/executors/LocalPipelineExecutor.ts` — implements `IPipelineExecutor`; `execute()` runs each `PipelineStep.command` as a child process via `Bun.spawn()`; streams stdout per step; resolves with `PipelineResult { status: 'completed' | 'failed', completedSteps, artifact }`
 
 ### ResourceAccess — VCS
 
-- [ ] T022 [US1] Implement `VCSAccess` class in `src/access/VCSAccess.ts` — implements `IVCSAccess`; `fetchSource()` uses `simple-git` to clone the configured repo+branch into a temp dir; `validateCredentials()` makes a lightweight authenticated GitHub API call (`GET /user`); returns `SourceArtifact`
+- [x] T022 [US1] Implement `VCSAccess` class in `src/access/VCSAccess.ts` — implements `IVCSAccess`; `fetchSource()` uses `simple-git` to clone the configured repo+branch into a temp dir; `validateCredentials()` makes a lightweight authenticated GitHub API call (`GET /user`); returns `SourceArtifact`
 
 ### ResourceAccess — CSP (AWS)
 
-- [ ] T023 [US1] Install AWS SDK v3 modules: `bun add @aws-sdk/client-s3 @aws-sdk/client-elastic-beanstalk @aws-sdk/client-lambda`
-- [ ] T024 [US1] Implement `CSPAccess` class in `src/access/CSPAccess.ts` — implements `ICSPAccess`; v1 supports `CloudPlatform.AWS` only; `deploy()` uploads built artifact to EC2/S3 via AWS SDK; `validateCredentials()` calls `STS.getCallerIdentity()`; `getPlatformAdapter()` private method returns the correct SDK client per platform
+- [x] T023 [US1] Install AWS SDK v3 modules: `bun add @aws-sdk/client-s3 @aws-sdk/client-elastic-beanstalk @aws-sdk/client-lambda`
+- [x] T024 [US1] Implement `CSPAccess` class in `src/access/CSPAccess.ts` — implements `ICSPAccess`; v1 supports `CloudPlatform.AWS` only; `deploy()` uploads built artifact to EC2/S3 via AWS SDK; `validateCredentials()` calls `STS.getCallerIdentity()`; `getPlatformAdapter()` private method returns the correct SDK client per platform
 
 ### ShippingEngine
 
-- [ ] T025 [US1] Implement `ShippingEngine` class in `src/engines/ShippingEngine.ts` — implements `IShippingEngine`; constructor takes `IVCSAccess`, `ICSPAccess`, `IPipelineExecutor`; `run()` orchestrates: fetch source → executor.execute(pipeline) → if `completed` then cspAccess.deploy else return with `status: 'pending'`; `validateCredentials()` calls both VCS and CSP validate methods
+- [x] T025 [US1] Implement `ShippingEngine` class in `src/engines/ShippingEngine.ts` — implements `IShippingEngine`; constructor takes `IVCSAccess`, `ICSPAccess`, `IPipelineExecutor`; `run()` orchestrates: fetch source → executor.execute(pipeline) → if `completed` then cspAccess.deploy else return with `status: 'pending'`; `validateCredentials()` calls both VCS and CSP validate methods
 
 ### DeploymentManager
 
-- [ ] T026 [US1] Implement `DeploymentManager` class in `src/managers/DeploymentManager.ts` — implements `IDeploymentManager`; `deploy()` calls `orchestrating.buildPipeline()` then `shipping.run(pipeline, request)`; maps `ShippingResult` to `DeploymentOutcome`; emits progress via callback passed from `DeployCLI`
+- [x] T026 [US1] Implement `DeploymentManager` class in `src/managers/DeploymentManager.ts` — implements `IDeploymentManager`; `deploy()` calls `orchestrating.buildPipeline()` then `shipping.run(pipeline, request)`; maps `ShippingResult` to `DeploymentOutcome`; emits progress via callback passed from `DeployCLI`
 
 ### DeployCLI + Entry Point
 
-- [ ] T027 [US1] Implement `DeployCLI` class in `src/client/DeployCLI.ts` — uses `commander` to register `deploy` and `validate` subcommands; `run()` parses args, calls `ConfigLoader`, constructs `DeploymentRequest`, calls `DeploymentManager.deploy()`; `renderOutcome()` prints live URL on `completed`, tracking URL on `pending`, step error on `failed`
-- [ ] T028 [US1] Implement `src/index.ts` — DI wiring: instantiates `LocalPipelineExecutor`, `VCSAccess`, `CSPAccess`, `ShippingEngine`, `OrchestratingEngine`, `DeploymentManager`, `DeployCLI`; calls `DeployCLI.run(process.argv)`
-- [ ] T029 [US1] Implement `carborator validate` subcommand in `src/client/DeployCLI.ts` — calls `ShippingEngine.validateCredentials()`, prints per-check pass/fail, exits with code 1 on any failure
+- [x] T027 [US1] Implement `DeployCLI` class in `src/client/DeployCLI.ts` — uses `commander` to register `deploy` and `validate` subcommands; `run()` parses args, calls `ConfigLoader`, constructs `DeploymentRequest`, calls `DeploymentManager.deploy()`; `renderOutcome()` prints live URL on `completed`, tracking URL on `pending`, step error on `failed`
+- [x] T028 [US1] Implement `src/index.ts` — DI wiring: instantiates `LocalPipelineExecutor`, `VCSAccess`, `CSPAccess`, `ShippingEngine`, `OrchestratingEngine`, `DeploymentManager`, `DeployCLI`; calls `DeployCLI.run(process.argv)`
+- [x] T029 [US1] Implement `carborator validate` subcommand in `src/client/DeployCLI.ts` — calls `ShippingEngine.validateCredentials()`, prints per-check pass/fail, exits with code 1 on any failure
 
 **Checkpoint**: `carborator deploy` fully works for a standard React/Node app → GitHub → AWS. Build, run the command, verify live URL returned.
 
