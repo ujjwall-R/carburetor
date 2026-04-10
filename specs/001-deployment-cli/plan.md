@@ -315,6 +315,122 @@ class CSPAccess implements ICSPAccess {
 
 ---
 
+## Execution Completion Contract
+
+### The Core Rule
+
+`IPipelineExecutor.execute()` always returns `Promise<PipelineResult>` — the same interface regardless of executor. **How** the Promise resolves differs per implementation, but `ShippingEngine` and `DeploymentManager` are oblivious to this difference.
+
+### Completion Modes
+
+#### Local (`LocalPipelineExecutor`)
+```
+executor.execute(pipeline, context)
+  → spawns child processes (Bun.spawn) per step
+  → awaits each process exit
+  → resolves Promise when all steps done
+  → PipelineResult { status: 'completed' | 'failed', artifact?, completedSteps }
+```
+CLI stays alive throughout. Completion is synchronous from the caller's perspective.
+
+#### Jenkins — Blocking Mode (`waitForCompletion: true`)
+```
+executor.execute(pipeline, context)
+  → POST /job/{jobName}/build   (submit job with pipeline serialized as params)
+  → GET  /job/{jobName}/lastBuild/api/json  (poll every N seconds)
+  → resolves Promise when Jenkins reports SUCCESS or FAILURE
+  → PipelineResult { status: 'completed' | 'failed', ... }
+```
+CLI stays alive while polling. Manager sees identical result to local mode.
+
+#### Jenkins — Non-Blocking Mode (`waitForCompletion: false`)
+```
+executor.execute(pipeline, context)
+  → POST /job/{jobName}/build   (submit job)
+  → resolves Promise immediately
+  → PipelineResult { status: 'pending', trackingUrl: 'https://jenkins.../job/123' }
+```
+CLI exits quickly. `ShippingEngine.run()` detects `pending` status, skips the CSP deploy step (Jenkins handles it), returns `ShippingResult { status: 'pending', trackingUrl }`.
+
+#### Temporal — Blocking / Non-Blocking (same pattern)
+Same two modes, using Temporal workflow ID as `trackingUrl` in non-blocking mode.
+
+---
+
+### How Each Layer Handles `pending`
+
+```
+IPipelineExecutor.execute()
+  → PipelineResult { status: 'pending', trackingUrl }
+        │
+        ▼
+ShippingEngine.run()
+  → detects pending → skips cspAccess.deploy()
+  → returns ShippingResult { status: 'pending', trackingUrl }
+        │
+        ▼
+DeploymentManager.deploy()
+  → builds DeploymentOutcome { status: 'pending', trackingUrl }
+        │
+        ▼
+DeployCLI.renderOutcome()
+  → prints: "Build submitted to Jenkins."
+            "Track progress at: https://jenkins.../job/123"
+  → exits 0
+```
+
+For `completed`:
+```
+ShippingEngine.run()
+  → result.status === 'completed'
+  → proceeds to cspAccess.deploy(result.artifact, target)
+  → returns ShippingResult { status: 'completed', endpoint: 'https://my-app.com' }
+```
+
+---
+
+### Execution Mode Configuration
+
+Set in `carborator.yml` under `executor`:
+
+```yaml
+executor:
+  type: local             # local | jenkins | temporal
+
+  # Jenkins-specific (only when type: jenkins)
+  jenkins:
+    baseUrl: "https://jenkins.example.com"
+    jobName: "carborator-deploy"
+    token: "${JENKINS_API_TOKEN}"       # resolved from env at runtime
+    waitForCompletion: true             # false = fire-and-forget
+    pollIntervalMs: 10000
+
+  # Temporal-specific (only when type: temporal)
+  temporal:
+    address: "temporal.example.com:7233"
+    namespace: "deployments"
+    taskQueue: "carborator-tasks"
+    waitForCompletion: true
+```
+
+`src/index.ts` reads this config and wires the correct `IPipelineExecutor` implementation before constructing `ShippingEngine`.
+
+---
+
+### `ExecutionStatus` in the Data Model
+
+```typescript
+enum ExecutionStatus {
+  Completed = 'completed',
+  Pending   = 'pending',    // submitted to remote executor, not yet done
+  Failed    = 'failed',
+}
+```
+
+`PipelineResult`, `ShippingResult`, and `DeploymentOutcome` all carry `ExecutionStatus`. A `pending` result always includes `trackingUrl: string`.
+
+---
+
 ## Project Structure
 
 ### Documentation (this feature)

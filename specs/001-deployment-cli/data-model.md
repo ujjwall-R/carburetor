@@ -49,6 +49,14 @@ enum DeploymentStatus {
   Success    = 'success',
   Failed     = 'failed',
 }
+
+// Returned by IPipelineExecutor — reflects whether execution completed inline
+// or was handed off to a remote system (Jenkins, Temporal)
+enum ExecutionStatus {
+  Completed = 'completed',   // execution finished, artifact ready
+  Pending   = 'pending',     // submitted to remote executor, not yet done
+  Failed    = 'failed',      // execution failed, error available
+}
 ```
 
 ---
@@ -149,10 +157,11 @@ interface StepResult {
 
 // Result of executing the full pipeline — returned by IPipelineExecutor.execute()
 interface PipelineResult {
-  success:        boolean
+  status:         ExecutionStatus
   completedSteps: StepResult[]
-  failedStep?:    StepResult
-  artifact?:      DeployableArtifact   // populated only on success
+  failedStep?:    StepResult           // populated when status === 'failed'
+  artifact?:      DeployableArtifact   // populated when status === 'completed'
+  trackingUrl?:   string               // populated when status === 'pending' (Jenkins job URL, Temporal workflow URL)
 }
 ```
 
@@ -163,17 +172,19 @@ Used only when wiring non-local executors in `src/index.ts`. Not part of the Pip
 ```typescript
 // Only needed when using JenkinsPipelineExecutor
 interface JenkinsConfig {
-  baseUrl:    string       // e.g. 'https://jenkins.example.com'
-  jobName:    string       // Jenkins job to trigger
-  token:      string       // Jenkins API token
-  pollIntervalMs: number   // how often to poll job status (default: 10000)
+  baseUrl:          string   // e.g. 'https://jenkins.example.com'
+  jobName:          string   // Jenkins job to trigger
+  token:            string   // Jenkins API token (from env at runtime)
+  waitForCompletion: boolean // true = poll until done; false = fire-and-return-URL
+  pollIntervalMs:   number   // poll frequency when waitForCompletion=true (default: 10000)
 }
 
 // Only needed when using TemporalPipelineExecutor
 interface TemporalConfig {
-  address:    string       // Temporal server address
-  namespace:  string
-  taskQueue:  string
+  address:          string   // Temporal server address e.g. 'temporal.example.com:7233'
+  namespace:        string
+  taskQueue:        string
+  waitForCompletion: boolean // true = await workflow result; false = return workflow ID as trackingUrl
 }
 ```
 
@@ -215,20 +226,28 @@ interface DeployableArtifact {
 // src/models/DeploymentOutcome.ts
 
 interface DeploymentOutcome {
-  status:         DeploymentStatus
-  endpoint?:      string           // live URL or ARN on success
-  completedSteps: StepResult[]
-  failedStep?:    StepResult       // populated on failure
-  error?:         string           // top-level error message
+  status:          ExecutionStatus
+  endpoint?:       string          // live URL — populated when status === 'completed'
+  trackingUrl?:    string          // Jenkins/Temporal URL — populated when status === 'pending'
+  completedSteps:  StepResult[]
+  failedStep?:     StepResult      // populated when status === 'failed'
+  error?:          string          // top-level error message
   totalDurationMs: number
 }
 
-// Internal result from ShippingEngine.ship()
+/*
+  DeployCLI renders based on status:
+    'completed' → "✓ Deployed. Endpoint: https://..."
+    'pending'   → "Build submitted. Track at: https://jenkins.../job/123"
+    'failed'    → "✗ Failed at step [name]: [error]"
+*/
+
+// Internal result from ShippingEngine.run()
 interface ShippingResult {
-  success:    boolean
-  resourceId: string
-  endpoint:   string
-  platform:   CloudPlatform
+  status:       ExecutionStatus
+  endpoint?:    string          // live URL — populated when status === 'completed'
+  trackingUrl?: string          // job/workflow URL — populated when status === 'pending'
+  platform:     CloudPlatform
 }
 
 // Internal result from credential validation
