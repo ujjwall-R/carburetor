@@ -72,3 +72,11 @@ Four layers, each answering a distinct question:
 - **Engines, ResourceAccess, and Resources** do not subscribe to events — only Clients or Managers do.
 - **Engines never call each other.**
 - **ResourceAccess services never call each other.**
+
+## Active Technologies
+- TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*) (001-deployment-cli)
+- N/A — stateless per invocation; config sourced from `carborator.yml` (001-deployment-cli)
+- TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*) (001-deployment-cli)
+
+## Recent Changes
+- 001-deployment-cli: Added TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)
