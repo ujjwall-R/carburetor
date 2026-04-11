@@ -77,6 +77,7 @@ Four layers, each answering a distinct question:
 - TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*) (001-deployment-cli)
 - N/A — stateless per invocation; config sourced from `carborator.yml` (001-deployment-cli)
 - TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*) (001-deployment-cli)
+- TypeScript 5.5 (strict mode) (ujjwal/baseSetup)
 
 ## Recent Changes
 - 001-deployment-cli: Added TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)

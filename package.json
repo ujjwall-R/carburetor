@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build --compile --outfile carborator src/index.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:coverage:check": "bun test --coverage && bash scripts/check-coverage.sh"
   },
   "dependencies": {
     "commander": "^12.1.0",

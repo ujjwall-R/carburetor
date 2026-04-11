@@ -95,6 +95,7 @@ export class OrchestratingEngine implements IOrchestratingEngine {
       case ProjectType.Custom:
         return [];
 
+      /* istanbul ignore next — Docker step generation not yet implemented */
       default:
         return [];
     }

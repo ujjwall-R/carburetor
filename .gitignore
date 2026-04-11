@@ -9,3 +9,5 @@ carborator
 *.tmp
 *.swp
 /tmp/carborator-*/
+carborator.yml
+coverage/

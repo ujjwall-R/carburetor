@@ -82,6 +82,7 @@ export class LocalPipelineExecutor implements IPipelineExecutor {
         }
       });
 
+      /* istanbul ignore next — spawn error fires only if the shell itself fails to launch, untestable in a standard env */
       child.on('error', (err) => {
         resolve({
           stepId: step.id,
