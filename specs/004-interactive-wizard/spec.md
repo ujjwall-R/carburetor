@@ -3,16 +3,25 @@
 **Feature Branch**: `004-interactive-wizard`
 **Created**: 2026-04-12
 **Status**: Draft
+<<<<<<< HEAD
 **Input**: User description: "interactive CLI wizard mode — user gets dropdowns and form elements to configure a deployment interactively when running carburetor with a specific flag. Project type, VCS, CSP, service, and all credentials/env vars collected one by one with validation. All UX choices encapsulated in the Client layer."
 
 ## Overview
 
 Today, deploying with `carburetor` requires a pre-authored `carburetor.yml` config file and manually exported environment variables. This creates friction for first-time users and ad-hoc deployments. This feature adds an **interactive wizard mode** triggered by a flag that guides the user through every deployment decision via sequential terminal prompts — selecting the project type, version-control provider, cloud platform, service type, and entering all required credentials one by one. The wizard assembles the same deployment request that the config-file path produces and hands it directly to the deployment flow. All wizard choices (which project types, VCS providers, cloud platforms, and service types to offer) are owned entirely by the Client layer, keeping the Manager and Engine layers free of presentation-layer concerns.
+=======
+**Input**: User description: "interactive CLI wizard mode — user gets dropdowns and form elements to configure a deployment interactively when running carborator with a specific flag. Project type, VCS, CSP, service, and all credentials/env vars collected one by one with validation. All UX choices encapsulated in the Client layer."
+
+## Overview
+
+Today, deploying with `carborator` requires a pre-authored `carborator.yml` config file and manually exported environment variables. This creates friction for first-time users and ad-hoc deployments. This feature adds an **interactive wizard mode** triggered by a flag that guides the user through every deployment decision via sequential terminal prompts — selecting the project type, version-control provider, cloud platform, service type, and entering all required credentials one by one. The wizard assembles the same deployment request that the config-file path produces and hands it directly to the deployment flow. All wizard choices (which project types, VCS providers, cloud platforms, and service types to offer) are owned entirely by the Client layer, keeping the Manager and Engine layers free of presentation-layer concerns.
+>>>>>>> main
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 — Complete Interactive Deployment (Priority: P1)
 
+<<<<<<< HEAD
 A developer who has never set up a `carburetor.yml` runs `carburetor deploy --interactive`. They are walked through a wizard that asks for their project type, VCS details, cloud target, and credentials step by step. At the end, the deployment runs exactly as if they had provided a config file.
 
 **Why this priority**: This is the primary value of the wizard — enabling a deployment from zero config. All other user stories depend on or extend this flow.
@@ -22,6 +31,17 @@ A developer who has never set up a `carburetor.yml` runs `carburetor deploy --in
 **Acceptance Scenarios**:
 
 1. **Given** no `carburetor.yml` exists, **When** the user runs `carburetor deploy --interactive`, **Then** the wizard starts and presents the first prompt (project type selection).
+=======
+A developer who has never set up a `carborator.yml` runs `carborator deploy --interactive`. They are walked through a wizard that asks for their project type, VCS details, cloud target, and credentials step by step. At the end, the deployment runs exactly as if they had provided a config file.
+
+**Why this priority**: This is the primary value of the wizard — enabling a deployment from zero config. All other user stories depend on or extend this flow.
+
+**Independent Test**: A user can run `carborator deploy --interactive`, answer every prompt, and observe a successful deployment (or validated dry-run) with zero `carborator.yml` present.
+
+**Acceptance Scenarios**:
+
+1. **Given** no `carborator.yml` exists, **When** the user runs `carborator deploy --interactive`, **Then** the wizard starts and presents the first prompt (project type selection).
+>>>>>>> main
 2. **Given** the wizard is running, **When** the user selects React App and completes all remaining prompts, **Then** the deployment executes and the outcome is displayed identically to a file-based deployment.
 3. **Given** the wizard is running, **When** the user provides an invalid value for a credential field, **Then** the wizard rejects the input, displays a specific error message, and re-prompts the same field.
 4. **Given** the wizard completes successfully, **When** the deployment fails at the manager level, **Then** the wizard surfaces the same error output as the non-interactive path.
@@ -47,6 +67,7 @@ During the wizard, after selecting the CSP and service, the user is prompted for
 
 ### User Story 3 — Wizard Dry-Run Mode (Priority: P3)
 
+<<<<<<< HEAD
 A user who wants to verify their interactive inputs without deploying runs `carburetor deploy --interactive --dry-run`. The wizard collects all inputs and then runs credential validation only, reporting pass/fail for each credential.
 
 **Why this priority**: Mirrors the existing `--dry-run` flag for the file-based path; ensures the interactive path is equally safe for pre-flight checks.
@@ -56,6 +77,17 @@ A user who wants to verify their interactive inputs without deploying runs `carb
 **Acceptance Scenarios**:
 
 1. **Given** the user runs `carburetor deploy --interactive --dry-run`, **When** all prompts are answered, **Then** the system prints credential validation results and exits 0 on success — no deployment is performed.
+=======
+A user who wants to verify their interactive inputs without deploying runs `carborator deploy --interactive --dry-run`. The wizard collects all inputs and then runs credential validation only, reporting pass/fail for each credential.
+
+**Why this priority**: Mirrors the existing `--dry-run` flag for the file-based path; ensures the interactive path is equally safe for pre-flight checks.
+
+**Independent Test**: Run `carborator deploy --interactive --dry-run`, complete the wizard, and verify the output shows credential validation results with no deployment performed.
+
+**Acceptance Scenarios**:
+
+1. **Given** the user runs `carborator deploy --interactive --dry-run`, **When** all prompts are answered, **Then** the system prints credential validation results and exits 0 on success — no deployment is performed.
+>>>>>>> main
 2. **Given** the user provides invalid credentials in the wizard, **When** dry-run validation runs, **Then** the system prints specific error messages per credential and exits 1.
 
 ---
@@ -71,7 +103,11 @@ A user who wants to verify their interactive inputs without deploying runs `carb
 
 ### Functional Requirements
 
+<<<<<<< HEAD
 - **FR-001**: `carburetor deploy` MUST accept a new `--interactive` flag that, when present, activates the wizard mode instead of requiring a config file.
+=======
+- **FR-001**: `carborator deploy` MUST accept a new `--interactive` flag that, when present, activates the wizard mode instead of requiring a config file.
+>>>>>>> main
 - **FR-002**: The wizard MUST present a project-type selection prompt offering at least "React App" and one additional placeholder option; only one option can be chosen at a time.
 - **FR-003**: The wizard MUST present a VCS-provider selection prompt offering "GitHub" as the available option; the user must also provide a repository URL and branch name via text prompts.
 - **FR-004**: The wizard MUST present a cloud-platform selection prompt offering "AWS" as the available option.
@@ -95,12 +131,21 @@ A user who wants to verify their interactive inputs without deploying runs `carb
 
 ### Measurable Outcomes
 
+<<<<<<< HEAD
 - **SC-001**: A user with no `carburetor.yml` can complete an interactive deployment in under 3 minutes from running the flag to seeing the deployment outcome.
 - **SC-002**: 100% of required credential fields are validated before the deployment request is submitted — zero "missing env var" errors occur at runtime for interactively collected credentials.
 - **SC-003**: All wizard menu choices (project types, VCS providers, CSP platforms, service types) are defined exclusively in the Client layer; zero wizard-specific choice logic exists in Manager or Engine files.
 - **SC-004**: The Manager and Engine source files are unmodified by this feature (diff shows zero changes to those files).
 - **SC-005**: The existing file-based deploy path (`carburetor deploy -c carburetor.yml`) produces identical results before and after this feature is added.
 - **SC-006**: Running `carburetor deploy --interactive --dry-run` produces a credential-validation report without performing a deployment.
+=======
+- **SC-001**: A user with no `carborator.yml` can complete an interactive deployment in under 3 minutes from running the flag to seeing the deployment outcome.
+- **SC-002**: 100% of required credential fields are validated before the deployment request is submitted — zero "missing env var" errors occur at runtime for interactively collected credentials.
+- **SC-003**: All wizard menu choices (project types, VCS providers, CSP platforms, service types) are defined exclusively in the Client layer; zero wizard-specific choice logic exists in Manager or Engine files.
+- **SC-004**: The Manager and Engine source files are unmodified by this feature (diff shows zero changes to those files).
+- **SC-005**: The existing file-based deploy path (`carborator deploy -c carborator.yml`) produces identical results before and after this feature is added.
+- **SC-006**: Running `carborator deploy --interactive --dry-run` produces a credential-validation report without performing a deployment.
+>>>>>>> main
 
 ## Assumptions
 

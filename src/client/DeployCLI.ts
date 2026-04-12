@@ -38,7 +38,11 @@ export class DeployCLI {
     program
       .command('deploy')
       .description('Deploy application to the configured cloud platform')
+<<<<<<< HEAD
       .option('-c, --config <path>', 'Path to carburetor.yml', './carburetor.yml')
+=======
+      .option('-c, --config <path>', 'Path to carborator.yml', './carborator.yml')
+>>>>>>> main
       .option('-i, --interactive', 'Launch interactive setup wizard', false)
       .option('-t, --target <platform>', 'Override target platform (aws|gcp|azure|lambda)')
       .option('-e, --env <name>', 'Override environment name')
@@ -69,7 +73,11 @@ export class DeployCLI {
 
   private async runDeploy(args: CLIArgs): Promise<void> {
     // Interactive path — skip config file when --interactive is set and --config was not explicitly provided
+<<<<<<< HEAD
     if (args.interactive && args.config === './carburetor.yml') {
+=======
+    if (args.interactive && args.config === './carborator.yml') {
+>>>>>>> main
       const { WizardSession } = await import('./wizard/WizardSession.js');
       const session = new WizardSession();
       const request = await session.run(args.dryRun, args.verbose);
@@ -77,7 +85,11 @@ export class DeployCLI {
       return;
     }
 
+<<<<<<< HEAD
     if (args.interactive && args.config !== './carburetor.yml') {
+=======
+    if (args.interactive && args.config !== './carborator.yml') {
+>>>>>>> main
       process.stderr.write('Warning: --interactive ignored when --config is provided. Using config file.\n');
     }
 

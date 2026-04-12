@@ -194,7 +194,11 @@ carburetor deploy
 Options:
 
 ```
+<<<<<<< HEAD
 -c, --config <path>       Path to carburetor.yml (default: ./carburetor.yml)
+=======
+-c, --config <path>       Path to carborator.yml (default: ./carborator.yml)
+>>>>>>> main
 -i, --interactive         Launch interactive setup wizard (no config file needed)
 -t, --target <platform>   Override target platform (aws|gcp|azure|lambda)
 -e, --env <name>          Override environment name
@@ -215,6 +219,12 @@ carburetor deploy --interactive
 # Interactive wizard + dry-run (validate credentials without deploying)
 carburetor deploy --interactive --dry-run
 
+# Interactive wizard — no carborator.yml needed
+carborator deploy --interactive
+
+# Interactive wizard + dry-run (validate credentials without deploying)
+carborator deploy --interactive --dry-run
+
 # Override platform at runtime
 carburetor deploy --target lambda
 
@@ -230,11 +240,19 @@ carburetor deploy --json
 
 ### Interactive Wizard (`--interactive`)
 
+<<<<<<< HEAD
 The wizard guides you through every deployment decision step by step — no `carburetor.yml` required.
 Run it when deploying to a new environment for the first time or for ad-hoc deployments.
 
 ```
 ┌  carburetor — Interactive Deployment Wizard
+=======
+The wizard guides you through every deployment decision step by step — no `carborator.yml` required.
+Run it when deploying to a new environment for the first time or for ad-hoc deployments.
+
+```
+┌  carborator — Interactive Deployment Wizard
+>>>>>>> main
 │
 ◆  What type of project are you deploying?
 │  ● React App  ○ Other (experimental)
