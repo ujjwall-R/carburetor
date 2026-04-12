@@ -2,10 +2,12 @@ import { Command } from 'commander';
 import { ExecutionStatus } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
+import type { DeploymentRequest } from '../models/DeploymentRequest.js';
 import type { CarboratorConfig, ConfigLoader } from '../config/ConfigLoader.js';
 
 interface CLIArgs {
   config: string;
+  interactive: boolean;
   target?: string;
   env?: string;
   dryRun: boolean;
@@ -36,6 +38,7 @@ export class DeployCLI {
       .command('deploy')
       .description('Deploy application to the configured cloud platform')
       .option('-c, --config <path>', 'Path to carborator.yml', './carborator.yml')
+      .option('-i, --interactive', 'Launch interactive setup wizard', false)
       .option('-t, --target <platform>', 'Override target platform (aws|gcp|azure|lambda)')
       .option('-e, --env <name>', 'Override environment name')
       .option('--dry-run', 'Validate config and credentials without deploying', false)
@@ -64,6 +67,20 @@ export class DeployCLI {
   }
 
   private async runDeploy(args: CLIArgs): Promise<void> {
+    // Interactive path — skip config file when --interactive is set and --config was not explicitly provided
+    if (args.interactive && args.config === './carborator.yml') {
+      const { WizardSession } = await import('./wizard/WizardSession.js');
+      const session = new WizardSession();
+      const request = await session.run(args.dryRun, args.verbose);
+      await this.executeRequest(request, args);
+      return;
+    }
+
+    if (args.interactive && args.config !== './carborator.yml') {
+      process.stderr.write('Warning: --interactive ignored when --config is provided. Using config file.\n');
+    }
+
+    // File-based path
     let config: CarboratorConfig;
     try {
       config = this.configLoader.load(args.config);
@@ -89,7 +106,7 @@ export class DeployCLI {
       process.exit(1);
     }
 
-    const request = {
+    const request: DeploymentRequest = {
       project: { ...(config.project.type ? { type: config.project.type } : {}), buildConfig: config.project.build },
       target: config.target,
       vcsConfig: config.vcs,
@@ -99,6 +116,10 @@ export class DeployCLI {
       verbose: args.verbose,
     };
 
+    await this.executeRequest(request, args);
+  }
+
+  private async executeRequest(request: DeploymentRequest, args: CLIArgs): Promise<void> {
     if (args.dryRun) {
       this.printLine('Dry run — validating config and credentials only.');
       const validation = await this.manager.validate(request);
@@ -135,7 +156,7 @@ export class DeployCLI {
       process.exit(1);
     }
 
-    const request = {
+    const request: DeploymentRequest = {
       project: { ...(config.project.type ? { type: config.project.type } : {}), buildConfig: config.project.build },
       target: config.target,
       vcsConfig: config.vcs,
