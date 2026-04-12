@@ -19,7 +19,7 @@ const manager = new DeploymentManager(
   shipping,
   (msg) => process.stdout.write(`  → ${msg}\n`)
 );
-const cli = new DeployCLI(manager, shipping, configLoader);
+const cli = new DeployCLI(manager, configLoader);
 
 // --- Entry point ---
 cli.run(process.argv).catch((err: Error) => {

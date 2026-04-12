@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import { ExecutionStatus } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
-import type { IShippingEngine } from '../engines/IShippingEngine.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
 import type { CarboratorConfig, ConfigLoader } from '../config/ConfigLoader.js';
 
@@ -19,7 +18,6 @@ export class DeployCLI {
 
   constructor(
     private readonly manager: IDeploymentManager,
-    private readonly shipping: IShippingEngine,
     private readonly configLoader: ConfigLoader
   ) {
     this.program = this.buildProgram();
@@ -103,7 +101,7 @@ export class DeployCLI {
 
     if (args.dryRun) {
       this.printLine('Dry run — validating config and credentials only.');
-      const validation = await this.shipping.validateCredentials(request);
+      const validation = await this.manager.validate(request);
       if (validation.valid) {
         this.printLine('✓ Config and credentials valid. No deployment performed.');
         process.exit(0);
@@ -148,7 +146,7 @@ export class DeployCLI {
     };
 
     console.log('Validating credentials...');
-    const validation = await this.shipping.validateCredentials(request);
+    const validation = await this.manager.validate(request);
 
     if (validation.valid) {
       console.log('✓ VCS credentials valid');

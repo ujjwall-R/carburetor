@@ -92,6 +92,24 @@ describe('DeploymentManager', () => {
     expect(progressMessages.some(m => m.toLowerCase().includes('building'))).toBe(true);
   });
 
+  // ─── validate ────────────────────────────────────────────────────────────
+
+  it('returns valid=true when shipping.validateCredentials resolves valid', async () => {
+    const result = await manager.validate(makeDeploymentRequest());
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('returns valid=false with errors when shipping.validateCredentials reports failure', async () => {
+    shippingMock.validateCredentials.mockResolvedValueOnce({
+      valid: false,
+      errors: ['Missing AWS_ACCESS_KEY_ID'],
+    });
+    const result = await manager.validate(makeDeploymentRequest());
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('Missing AWS_ACCESS_KEY_ID');
+  });
+
   it('does not throw when no progress callback is provided', async () => {
     const managerNoCallback = new DeploymentManager(orchMock as any, shippingMock as any);
     const outcome = await managerNoCallback.deploy(makeDeploymentRequest());
