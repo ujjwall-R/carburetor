@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { version } from '../../package.json';
 import { ExecutionStatus } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
@@ -30,14 +31,18 @@ export class DeployCLI {
   }
 
   private buildProgram(): Command {
-    const program = new Command('carborator')
+    const program = new Command('carburetor')
       .description('Deploy applications to cloud platforms')
-      .version('0.1.0');
+      .version(version);
 
     program
       .command('deploy')
       .description('Deploy application to the configured cloud platform')
+<<<<<<< HEAD
+      .option('-c, --config <path>', 'Path to carburetor.yml', './carburetor.yml')
+=======
       .option('-c, --config <path>', 'Path to carborator.yml', './carborator.yml')
+>>>>>>> main
       .option('-i, --interactive', 'Launch interactive setup wizard', false)
       .option('-t, --target <platform>', 'Override target platform (aws|gcp|azure|lambda)')
       .option('-e, --env <name>', 'Override environment name')
@@ -50,8 +55,8 @@ export class DeployCLI {
 
     program
       .command('validate')
-      .description('Validate carborator.yml and cloud credentials without deploying')
-      .option('-c, --config <path>', 'Path to carborator.yml', './carborator.yml')
+      .description('Validate carburetor.yml and cloud credentials without deploying')
+      .option('-c, --config <path>', 'Path to carburetor.yml', './carburetor.yml')
       .action(async (opts: { config: string }) => {
         await this.runValidate(opts.config);
       });
@@ -60,7 +65,7 @@ export class DeployCLI {
       .command('version')
       .description('Print installed version')
       .action(() => {
-        console.log('carborator v0.1.0');
+        console.log(`carburetor v${version}`);
       });
 
     return program;
@@ -68,7 +73,11 @@ export class DeployCLI {
 
   private async runDeploy(args: CLIArgs): Promise<void> {
     // Interactive path — skip config file when --interactive is set and --config was not explicitly provided
+<<<<<<< HEAD
+    if (args.interactive && args.config === './carburetor.yml') {
+=======
     if (args.interactive && args.config === './carborator.yml') {
+>>>>>>> main
       const { WizardSession } = await import('./wizard/WizardSession.js');
       const session = new WizardSession();
       const request = await session.run(args.dryRun, args.verbose);
@@ -76,7 +85,11 @@ export class DeployCLI {
       return;
     }
 
+<<<<<<< HEAD
+    if (args.interactive && args.config !== './carburetor.yml') {
+=======
     if (args.interactive && args.config !== './carborator.yml') {
+>>>>>>> main
       process.stderr.write('Warning: --interactive ignored when --config is provided. Using config file.\n');
     }
 

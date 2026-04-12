@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
+# Build carburetor binaries for all platforms from any host OS.
+=======
 # Build carborator binaries for all platforms from any host OS.
+>>>>>>> main
 set -euo pipefail
 
 sign_macos() {
   local OUTFILE="$1"
   local ENTITLEMENTS
+<<<<<<< HEAD
+  ENTITLEMENTS="$(mktemp /tmp/carburetor-entitlements.XXXX.plist)"
+=======
   ENTITLEMENTS="$(mktemp /tmp/carborator-entitlements.XXXX.plist)"
+>>>>>>> main
 
   cat > "$ENTITLEMENTS" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -46,11 +54,19 @@ build() {
   fi
 }
 
+<<<<<<< HEAD
+build bun-darwin-arm64  macos-arm64  carburetor      true
+build bun-darwin-x64    macos-x64    carburetor      true
+build bun-linux-arm64   linux-arm64  carburetor      false
+build bun-linux-x64     linux-x64    carburetor      false
+build bun-windows-x64   windows-x64  carburetor.exe  false
+=======
 build bun-darwin-arm64  macos-arm64  carborator      true
 build bun-darwin-x64    macos-x64    carborator      true
 build bun-linux-arm64   linux-arm64  carborator      false
 build bun-linux-x64     linux-x64    carborator      false
 build bun-windows-x64   windows-x64  carborator.exe  false
+>>>>>>> main
 
 echo ""
 echo "Binaries written to dist/:"

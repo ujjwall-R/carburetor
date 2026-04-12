@@ -133,7 +133,7 @@ Exports factory functions that return fresh mock instances. Each factory creates
 
 **`makeVCSAccessMock()`** → `IVCSAccess`:
 - `validateCredentials` → resolves `true` by default
-- `fetchSource` → resolves `{ localPath: '/tmp/carborator-src-test', metadata: {} }`
+- `fetchSource` → resolves `{ localPath: '/tmp/carburetor-src-test', metadata: {} }`
 
 **`makeCSPAccessMock()`** → `ICSPAccess`:
 - `validateCredentials` → resolves `true`

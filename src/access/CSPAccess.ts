@@ -111,7 +111,7 @@ export class CSPAccess implements ICSPAccess {
     let keyFile = sshKeyPath ?? '';
     let tempKeyFile: string | undefined;
     if (sshKey) {
-      const tmpDir = mkdtempSync(join(tmpdir(), 'carborator-key-'));
+      const tmpDir = mkdtempSync(join(tmpdir(), 'carburetor-key-'));
       tempKeyFile = join(tmpDir, 'deploy.pem');
       writeFileSync(tempKeyFile, sshKey, { mode: 0o600 });
       keyFile = tempKeyFile;
@@ -131,7 +131,7 @@ export class CSPAccess implements ICSPAccess {
       await this.runCommand('scp', [
         ...sshOpts,
         artifact.path,
-        `${sshUser}@${publicDns}:/tmp/carborator-artifact.tar.gz`,
+        `${sshUser}@${publicDns}:/tmp/carburetor-artifact.tar.gz`,
       ]);
 
       // Ensure nginx is installed, running, and serving deployDir, then extract artifact
@@ -149,9 +149,9 @@ export class CSPAccess implements ICSPAccess {
         // Clear old files before extracting so stale assets don't linger
         `sudo find ${deployDir} -mindepth 1 -delete`,
         // Extract artifact (strip top-level folder from the tar, e.g. build/ -> deployDir/)
-        `sudo tar -xzf /tmp/carborator-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
+        `sudo tar -xzf /tmp/carburetor-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
         // Clean up
-        `rm /tmp/carborator-artifact.tar.gz`,
+        `rm /tmp/carburetor-artifact.tar.gz`,
         // Reload nginx to pick up any config changes
         'sudo systemctl reload nginx',
       ].join(' && ');

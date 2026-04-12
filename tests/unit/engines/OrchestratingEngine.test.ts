@@ -87,7 +87,7 @@ describe('OrchestratingEngine', () => {
     let tmpDir: string;
 
     beforeEach(() => {
-      tmpDir = mkdtempSync(join(tmpdir(), 'carborator-test-'));
+      tmpDir = mkdtempSync(join(tmpdir(), 'carburetor-test-'));
     });
 
     afterEach(() => {

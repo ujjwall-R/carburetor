@@ -43,7 +43,7 @@ export class ShippingEngine implements IShippingEngine {
   async run(pipeline: Pipeline, request: DeploymentRequest): Promise<ShippingResult> {
     const source = await this.fetchSource(request);
 
-    const artifactDir = mkdtempSync(join(tmpdir(), 'carborator-artifacts-'));
+    const artifactDir = mkdtempSync(join(tmpdir(), 'carburetor-artifacts-'));
     const pipelineResult = await this.executor.execute(pipeline, {
       sourceDir: source.localPath,
       artifactDir,
@@ -81,7 +81,7 @@ export class ShippingEngine implements IShippingEngine {
   }
 
   private async fetchSource(request: DeploymentRequest): Promise<SourceArtifact> {
-    const destDir = mkdtempSync(join(tmpdir(), 'carborator-src-'));
+    const destDir = mkdtempSync(join(tmpdir(), 'carburetor-src-'));
     const metadata = await this.vcsAccess.fetchSource(
       request.vcsConfig,
       request.vcsCredentials,

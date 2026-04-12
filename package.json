@@ -1,15 +1,19 @@
 {
-  "name": "carborator",
+  "name": "carburetor",
   "version": "0.1.0",
   "description": "CLI tool that deploys applications to cloud platforms",
   "type": "module",
   "main": "src/index.ts",
   "bin": {
-    "carborator": "./carborator"
+    "carburetor": "./carburetor"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
+<<<<<<< HEAD
+    "build": "bun build --compile --minify --outfile carburetor src/index.ts && bash scripts/sign.sh carburetor",
+=======
     "build": "bun build --compile --minify --outfile carborator src/index.ts && bash scripts/sign.sh carborator",
+>>>>>>> main
     "build:all": "bash scripts/build-all.sh",
     "test": "bun test",
     "test:coverage": "bun test --coverage",

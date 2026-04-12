@@ -1,32 +1,32 @@
-# CLI Contract: `carborator`
+# CLI Contract: `carburetor`
 
 **Feature**: `001-deployment-cli`  
 **Phase**: 1 — Design  
 **Date**: 2026-04-11
 
-This document defines the public contract for the `carborator` CLI tool — the interface the `DeployCLI` client exposes to users and CI systems.
+This document defines the public contract for the `carburetor` CLI tool — the interface the `DeployCLI` client exposes to users and CI systems.
 
 ---
 
 ## Command Structure
 
 ```
-carborator <command> [options]
+carburetor <command> [options]
 ```
 
 ---
 
 ## Commands
 
-### `carborator deploy`
+### `carburetor deploy`
 
 Deploy an application to a cloud platform.
 
 ```
-carborator deploy [options]
+carburetor deploy [options]
 
 Options:
-  -c, --config <path>      Path to carborator.yml (default: ./carborator.yml)
+  -c, --config <path>      Path to carburetor.yml (default: ./carburetor.yml)
   -t, --target <platform>  Override target platform: aws | gcp | azure | lambda
   -e, --env <name>         Override environment: production | staging | preview
       --dry-run            Validate config and credentials without deploying
@@ -46,26 +46,26 @@ Options:
 
 ---
 
-### `carborator validate`
+### `carburetor validate`
 
-Validate `carborator.yml` and cloud credentials without deploying.
+Validate `carburetor.yml` and cloud credentials without deploying.
 
 ```
-carborator validate [options]
+carburetor validate [options]
 
 Options:
-  -c, --config <path>   Path to carborator.yml (default: ./carborator.yml)
+  -c, --config <path>   Path to carburetor.yml (default: ./carburetor.yml)
   -h, --help            Show help
 ```
 
 ---
 
-### `carborator version`
+### `carburetor version`
 
 Print the installed version.
 
 ```
-carborator version
+carburetor version
 ```
 
 ---
@@ -120,7 +120,7 @@ One JSON object per line (newline-delimited JSON / NDJSON):
 
 ---
 
-## Configuration File Contract (`carborator.yml`)
+## Configuration File Contract (`carburetor.yml`)
 
 ```yaml
 # All fields unless marked optional are required

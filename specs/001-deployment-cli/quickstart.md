@@ -9,7 +9,7 @@
 
 - Bun installed (`curl -fsSL https://bun.sh/install | bash`)
 - Cloud credentials available as environment variables (see below)
-- A `carborator.yml` at your project root
+- A `carburetor.yml` at your project root
 
 ---
 
@@ -18,17 +18,17 @@
 ```bash
 # From source
 git clone <repo>
-cd carborator
+cd carburetor
 bun install
-bun build --compile --outfile carborator src/index.ts
+bun build --compile --outfile carburetor src/index.ts
 
 # Add to PATH
-mv carborator /usr/local/bin/carborator
+mv carburetor /usr/local/bin/carburetor
 ```
 
 ---
 
-## Setup: `carborator.yml`
+## Setup: `carburetor.yml`
 
 Place this at your project root:
 
@@ -64,16 +64,16 @@ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 ```bash
 # Validate without deploying first
-carborator validate
+carburetor validate
 
 # Deploy
-carborator deploy
+carburetor deploy
 
 # Deploy to a specific environment
-carborator deploy --env staging
+carburetor deploy --env staging
 
 # Watch full step output
-carborator deploy --verbose
+carburetor deploy --verbose
 ```
 
 ---
@@ -88,5 +88,5 @@ bun run src/index.ts deploy
 bun test
 
 # Build binary
-bun build --compile --outfile carborator src/index.ts
+bun build --compile --outfile carburetor src/index.ts
 ```
