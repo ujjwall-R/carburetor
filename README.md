@@ -150,6 +150,7 @@ Options:
 
 ```
 -c, --config <path>       Path to carborator.yml (default: ./carborator.yml)
+-i, --interactive         Launch interactive setup wizard (no config file needed)
 -t, --target <platform>   Override target platform (aws|gcp|azure|lambda)
 -e, --env <name>          Override environment name
     --dry-run             Validate config and credentials without deploying
@@ -163,6 +164,12 @@ Examples:
 # Deploy using default config
 carborator deploy
 
+# Interactive wizard — no carborator.yml needed
+carborator deploy --interactive
+
+# Interactive wizard + dry-run (validate credentials without deploying)
+carborator deploy --interactive --dry-run
+
 # Override platform at runtime
 carborator deploy --target lambda
 
@@ -175,6 +182,46 @@ carborator deploy --config ./config/prod.yml
 # JSON output for CI pipelines
 carborator deploy --json
 ```
+
+### Interactive Wizard (`--interactive`)
+
+The wizard guides you through every deployment decision step by step — no `carborator.yml` required.
+Run it when deploying to a new environment for the first time or for ad-hoc deployments.
+
+```
+┌  carborator — Interactive Deployment Wizard
+│
+◆  What type of project are you deploying?
+│  ● React App  ○ Other (experimental)
+│
+◆  Repository URL        https://github.com/acme/my-app
+◆  Branch to deploy      main
+◆  Version control       ● GitHub
+◆  GitHub Token          ••••••••••••••••••  (masked)
+│
+◆  Cloud platform        ● AWS
+◆  Service type          ● EC2 Instance
+◆  AWS region            us-east-1
+◆  Environment           production
+◆  EC2 Instance ID       i-0abc123def456
+│
+◆  AWS_ACCESS_KEY_ID     ••••••••••••••••••  (masked)
+◆  AWS_SECRET_ACCESS_KEY ••••••••••••••••••  (masked)
+◆  SSH key               ● Paste inline  ○ Path to file
+◆  SSH username          ec2-user
+◆  Deploy directory      /var/www/app
+│
+┌─── Deployment Summary ──────────────────
+│  Project : react  │  Repo : acme/my-app
+│  Cloud   : aws    │  Service : ec2
+│  Region  : us-east-1  │  Env : production
+└─────────────────────────────────────────
+◆  Proceed with deployment?  Yes / No
+```
+
+- All secret fields are masked with `•` characters and never written to disk.
+- Press **Ctrl-C** at any prompt to cancel without triggering a deployment.
+- Combine with `--dry-run` to validate credentials before your first real deploy.
 
 ### Validate credentials
 
@@ -283,6 +330,9 @@ tests/
 │   ├── fixtures.ts      ← shared test-data builders
 │   └── mocks.ts         ← interface mock factories (bun:test)
 └── unit/
+    ├── client/
+    │   └── wizard/
+    │       └── WizardSession.test.ts
     ├── managers/
     │   └── DeploymentManager.test.ts
     ├── engines/

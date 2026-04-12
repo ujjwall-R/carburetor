@@ -146,6 +146,8 @@ export class CSPAccess implements ICSPAccess {
         'sudo systemctl start nginx',
         // Ensure deploy directory exists
         `sudo mkdir -p ${deployDir}`,
+        // Clear old files before extracting so stale assets don't linger
+        `sudo find ${deployDir} -mindepth 1 -delete`,
         // Extract artifact (strip top-level folder from the tar, e.g. build/ -> deployDir/)
         `sudo tar -xzf /tmp/carborator-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
         // Clean up

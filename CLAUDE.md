@@ -80,6 +80,8 @@ Four layers, each answering a distinct question:
 - TypeScript 5.5 (strict mode) (ujjwal/baseSetup)
 - TypeScript 5.5 (strict mode) + `commander` (CLI parsing); no new dependencies (ujjwal/baseSetup)
 - N/A — stateless refactor (ujjwal/baseSetup)
+- TypeScript 5.5 (strict mode) + `commander` (existing), `@clack/prompts` ^1.0.0 (new — zero transitive deps after leaves, Bun compile compatible, pin Bun ≥ 1.3.3) (ujjwal/baseSetup)
+- N/A — wizard session is in-memory only; no persistence (ujjwal/baseSetup)
 
 ## Recent Changes
 - 001-deployment-cli: Added TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)

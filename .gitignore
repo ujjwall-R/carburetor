@@ -11,4 +11,4 @@ carborator
 /tmp/carborator-*/
 carborator.yml
 coverage/
-carborator.pem
+*.pem
