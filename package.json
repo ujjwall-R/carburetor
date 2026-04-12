@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build --compile --outfile carborator src/index.ts",
+    "build": "bun build --compile --minify --outfile carborator src/index.ts && bash scripts/sign.sh carborator",
+    "build:all": "bash scripts/build-all.sh",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "test:coverage:check": "bun test --coverage && bash scripts/check-coverage.sh"
