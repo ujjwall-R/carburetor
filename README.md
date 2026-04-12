@@ -1,9 +1,9 @@
-# carborator
+# carburetor
 
 Deploy applications to cloud platforms with a single command. Carborator handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
 
 ```
-carborator deploy
+carburetor deploy
 ```
 
 ---
@@ -38,8 +38,8 @@ curl -fsSL https://bun.sh/install | bash
 ### Option 1 — Run from source
 
 ```bash
-git clone https://github.com/your-org/carborator.git
-cd carborator
+git clone https://github.com/your-org/carburetor.git
+cd carburetor
 bun install
 ```
 
@@ -57,18 +57,18 @@ bun run src/index.ts deploy
 bun run build
 ```
 
-Produces a signed, ready-to-run `./carborator` binary in the project root.
+Produces a signed, ready-to-run `./carburetor` binary in the project root.
 
 Move it somewhere on your `$PATH`:
 
 ```bash
-mv carborator /usr/local/bin/carborator
+mv carburetor /usr/local/bin/carburetor
 ```
 
 Then use it from anywhere:
 
 ```bash
-carborator deploy
+carburetor deploy
 ```
 
 #### For all platforms (distribution)
@@ -81,11 +81,11 @@ Produces binaries for every platform under `dist/`:
 
 ```
 dist/
-  macos-arm64/carborator
-  macos-x64/carborator
-  linux-arm64/carborator
-  linux-x64/carborator
-  windows-x64/carborator.exe
+  macos-arm64/carburetor
+  macos-x64/carburetor
+  linux-arm64/carburetor
+  linux-x64/carburetor
+  windows-x64/carburetor.exe
 ```
 
 macOS binaries are automatically ad-hoc signed so Gatekeeper doesn't block them. Linux and Windows binaries require no signing. Ship the folder matching the customer's platform.
@@ -109,7 +109,7 @@ bun run build:all
 The version is read directly from `package.json` at build time — no other files need updating. Verify with:
 
 ```bash
-./dist/macos-arm64/carborator --version
+./dist/macos-arm64/carburetor --version
 ```
 
 ---
@@ -119,10 +119,10 @@ The version is read directly from `package.json` at build time — no other file
 Copy the example config and fill in your values:
 
 ```bash
-cp carborator.example.yml carborator.yml
+cp carburetor.example.yml carburetor.yml
 ```
 
-`carborator.yml`:
+`carburetor.yml`:
 
 ```yaml
 project:
@@ -146,7 +146,7 @@ executor:
   type: local                      # local | jenkins
 ```
 
-> **Credentials are never stored in `carborator.yml`.** Set them as environment variables (see below).
+> **Credentials are never stored in `carburetor.yml`.** Set them as environment variables (see below).
 
 ---
 
@@ -188,13 +188,13 @@ export AZURE_SUBSCRIPTION_ID=...
 ### Deploy
 
 ```bash
-carborator deploy
+carburetor deploy
 ```
 
 Options:
 
 ```
--c, --config <path>       Path to carborator.yml (default: ./carborator.yml)
+-c, --config <path>       Path to carburetor.yml (default: ./carburetor.yml)
 -i, --interactive         Launch interactive setup wizard (no config file needed)
 -t, --target <platform>   Override target platform (aws|gcp|azure|lambda)
 -e, --env <name>          Override environment name
@@ -207,34 +207,34 @@ Examples:
 
 ```bash
 # Deploy using default config
-carborator deploy
+carburetor deploy
 
-# Interactive wizard — no carborator.yml needed
-carborator deploy --interactive
+# Interactive wizard — no carburetor.yml needed
+carburetor deploy --interactive
 
 # Interactive wizard + dry-run (validate credentials without deploying)
-carborator deploy --interactive --dry-run
+carburetor deploy --interactive --dry-run
 
 # Override platform at runtime
-carborator deploy --target lambda
+carburetor deploy --target lambda
 
 # Validate only — no deploy
-carborator deploy --dry-run
+carburetor deploy --dry-run
 
 # Use a custom config path
-carborator deploy --config ./config/prod.yml
+carburetor deploy --config ./config/prod.yml
 
 # JSON output for CI pipelines
-carborator deploy --json
+carburetor deploy --json
 ```
 
 ### Interactive Wizard (`--interactive`)
 
-The wizard guides you through every deployment decision step by step — no `carborator.yml` required.
+The wizard guides you through every deployment decision step by step — no `carburetor.yml` required.
 Run it when deploying to a new environment for the first time or for ad-hoc deployments.
 
 ```
-┌  carborator — Interactive Deployment Wizard
+┌  carburetor — Interactive Deployment Wizard
 │
 ◆  What type of project are you deploying?
 │  ● React App  ○ Other (experimental)
@@ -273,7 +273,7 @@ Run it when deploying to a new environment for the first time or for ad-hoc depl
 Check that your VCS and cloud credentials are valid before deploying:
 
 ```bash
-carborator validate
+carburetor validate
 ```
 
 ```
@@ -287,7 +287,7 @@ Validating credentials...
 ### Print version
 
 ```bash
-carborator version
+carburetor version
 ```
 
 ---
@@ -419,6 +419,6 @@ src/
     executors/    LocalPipelineExecutor, JenkinsPipelineExecutor
   access/         VCSAccess, CSPAccess — external resource adapters
   models/         TypeScript types and enums
-  config/         ConfigLoader — reads and validates carborator.yml
+  config/         ConfigLoader — reads and validates carburetor.yml
   index.ts        Dependency injection wiring and entry point
 ```

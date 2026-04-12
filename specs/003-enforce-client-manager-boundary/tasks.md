@@ -41,7 +41,7 @@ No new project initialization required — repository structure and tooling are 
 
 **Goal**: The `deploy --dry-run` path calls `this.manager.validate` instead of the removed `this.shipping` reference.
 
-**Independent Test**: Run `carborator deploy --dry-run` with valid and invalid credentials; verify exit code 0 / exit code 1 respectively. Confirm `grep -r "IShippingEngine" src/client/` returns no results.
+**Independent Test**: Run `carburetor deploy --dry-run` with valid and invalid credentials; verify exit code 0 / exit code 1 respectively. Confirm `grep -r "IShippingEngine" src/client/` returns no results.
 
 ### Implementation
 
@@ -55,13 +55,13 @@ No new project initialization required — repository structure and tooling are 
 
 **Goal**: The `validate` subcommand calls `this.manager.validate` instead of the removed `this.shipping` reference.
 
-**Independent Test**: Run `carborator validate` with valid and invalid credentials; verify per-check output and exit codes are identical to pre-refactor behavior.
+**Independent Test**: Run `carburetor validate` with valid and invalid credentials; verify per-check output and exit codes are identical to pre-refactor behavior.
 
 ### Implementation
 
 - [x] T006 [US2] In `DeployCLI.runValidate` in `src/client/DeployCLI.ts`, replace `this.shipping.validateCredentials(request)` with `this.manager.validate(request)` (currently line 151)
 
-**Checkpoint**: Both `deploy --dry-run` and `carborator validate` work correctly. `DeployCLI` has zero Engine references.
+**Checkpoint**: Both `deploy --dry-run` and `carburetor validate` work correctly. `DeployCLI` has zero Engine references.
 
 ---
 
@@ -117,7 +117,7 @@ Task T008: "Add validate failure-path test to DeploymentManager.test.ts"
 
 1. Complete Phase 2: Foundational (T001–T004) — ~10 min
 2. Complete Phase 3: US1 dry-run fix (T005) — ~2 min
-3. **STOP and VALIDATE**: Run `carborator deploy --dry-run`, confirm output, confirm no engine import
+3. **STOP and VALIDATE**: Run `carburetor deploy --dry-run`, confirm output, confirm no engine import
 4. Proceed to Phase 4 (US2) and Phase 5 (tests + verification)
 
 ### Full Delivery

@@ -39,7 +39,7 @@
 
 **Rationale**: The branching is localized entirely to `DeployCLI.runDeploy`. The `manager` reference is already in scope; the wizard just produces the same `DeploymentRequest` shape that the config path produces. Manager and Engine are untouched.
 
-**Detecting "explicit --config"**: Commander sets the default for `--config` to `'./carborator.yml'`. To distinguish "user passed --config" from "default used", we can check whether `commander` parsed the option as provided by inspecting `program.opts()` option source or simply set the interactive default to only activate wizard when `--config` was not explicitly set. Practical approach: if `args.interactive` is true, run wizard regardless; the wizard result fully replaces what `configLoader.load()` would have produced.
+**Detecting "explicit --config"**: Commander sets the default for `--config` to `'./carburetor.yml'`. To distinguish "user passed --config" from "default used", we can check whether `commander` parsed the option as provided by inspecting `program.opts()` option source or simply set the interactive default to only activate wizard when `--config` was not explicitly set. Practical approach: if `args.interactive` is true, run wizard regardless; the wizard result fully replaces what `configLoader.load()` would have produced.
 
 ## Decision 4: Credential masking
 

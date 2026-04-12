@@ -14,8 +14,8 @@ describe('LocalPipelineExecutor', () => {
 
   beforeEach(() => {
     executor = new LocalPipelineExecutor();
-    sourceDir = mkdtempSync(join(tmpdir(), 'carborator-test-src-'));
-    artifactDir = mkdtempSync(join(tmpdir(), 'carborator-test-artifacts-'));
+    sourceDir = mkdtempSync(join(tmpdir(), 'carburetor-test-src-'));
+    artifactDir = mkdtempSync(join(tmpdir(), 'carburetor-test-artifacts-'));
   });
 
   afterEach(() => {

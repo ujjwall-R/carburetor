@@ -16,7 +16,7 @@ A TypeScript CLI tool that deploys applications to cloud platforms end-to-end. T
 **Language/Version**: TypeScript 5.x (strict mode)  
 **Runtime / Package Manager**: Bun (latest stable)  
 **Primary Dependencies**: `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)  
-**Storage**: N/A — stateless per invocation; config sourced from `carborator.yml`  
+**Storage**: N/A — stateless per invocation; config sourced from `carburetor.yml`  
 **Testing**: `bun test` (built-in Bun test runner)  
 **Target Platform**: macOS / Linux developer machine and CI environments  
 **Project Type**: CLI tool (`bun build --compile` → single executable)  
@@ -391,7 +391,7 @@ ShippingEngine.run()
 
 ### Execution Mode Configuration
 
-Set in `carborator.yml` under `executor`:
+Set in `carburetor.yml` under `executor`:
 
 ```yaml
 executor:
@@ -400,7 +400,7 @@ executor:
   # Jenkins-specific (only when type: jenkins)
   jenkins:
     baseUrl: "https://jenkins.example.com"
-    jobName: "carborator-deploy"
+    jobName: "carburetor-deploy"
     token: "${JENKINS_API_TOKEN}"       # resolved from env at runtime
     waitForCompletion: true             # false = fire-and-forget
     pollIntervalMs: 10000
@@ -409,7 +409,7 @@ executor:
   temporal:
     address: "temporal.example.com:7233"
     namespace: "deployments"
-    taskQueue: "carborator-tasks"
+    taskQueue: "carburetor-tasks"
     waitForCompletion: true
 ```
 

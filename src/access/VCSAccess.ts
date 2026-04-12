@@ -11,7 +11,7 @@ export class VCSAccess implements IVCSAccess {
         const res = await fetch('https://api.github.com/user', {
           headers: {
             Authorization: `Bearer ${credentials.token}`,
-            'User-Agent': 'carborator/0.1.0',
+            'User-Agent': 'carburetor/0.1.0',
           },
         });
         return res.ok;

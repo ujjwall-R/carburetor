@@ -1,6 +1,6 @@
 # Contract: Wizard Interaction Sequence
 
-This document defines the complete prompt sequence a user experiences when running `carborator deploy --interactive`. Each step shows the prompt type, label, available choices (for selects), validation rule, and which `DeploymentRequest` field it populates.
+This document defines the complete prompt sequence a user experiences when running `carburetor deploy --interactive`. Each step shows the prompt type, label, available choices (for selects), validation rule, and which `DeploymentRequest` field it populates.
 
 ---
 

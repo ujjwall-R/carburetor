@@ -39,9 +39,9 @@ description: "Task list for 004-interactive-wizard"
 
 ## Phase 3: User Story 1 — Complete Interactive Deployment (Priority: P1) 🎯 MVP
 
-**Goal**: A user with no `carborator.yml` can run `carborator deploy --interactive`, navigate the selection menus and text prompts for project type, VCS, cloud platform, service, region, environment, and instance ID, confirm the summary, and trigger a deployment.
+**Goal**: A user with no `carburetor.yml` can run `carburetor deploy --interactive`, navigate the selection menus and text prompts for project type, VCS, cloud platform, service, region, environment, and instance ID, confirm the summary, and trigger a deployment.
 
-**Independent Test**: Run `carborator deploy --interactive`, answer all prompts (skip credential prompts by passing dummy values), confirm summary, observe deployment outcome — with no `carborator.yml` present.
+**Independent Test**: Run `carburetor deploy --interactive`, answer all prompts (skip credential prompts by passing dummy values), confirm summary, observe deployment outcome — with no `carburetor.yml` present.
 
 ### Implementation
 
@@ -52,9 +52,9 @@ description: "Task list for 004-interactive-wizard"
 - [x] T008 [US1] In `WizardSession.run()` in `src/client/wizard/WizardSession.ts`, implement `DeploymentRequest` assembly from collected session values and return it (leave credential fields as empty strings for now — US2 fills them in)
 - [x] T009 [US1] In `src/client/DeployCLI.ts`, add `interactive: boolean` to the `CLIArgs` interface and add `.option('-i, --interactive', 'Launch interactive setup wizard', false)` to the `deploy` command builder
 - [x] T010 [US1] In `src/client/DeployCLI.ts`, refactor the shared deploy execution tail (dry-run check + `manager.deploy` + `renderOutcome` + `process.exit`) from `runDeploy` into a new private method `executeRequest(request: DeploymentRequest, args: CLIArgs): Promise<void>`
-- [x] T011 [US1] In `src/client/DeployCLI.ts`, add the interactive branch at the top of `runDeploy`: if `args.interactive` is true AND `args.config` equals `'./carborator.yml'` (the default, meaning no explicit --config), dynamically import `WizardSession`, instantiate it, call `session.run(args.dryRun, args.verbose)` to get the request, then call `this.executeRequest(request, args)` and return
+- [x] T011 [US1] In `src/client/DeployCLI.ts`, add the interactive branch at the top of `runDeploy`: if `args.interactive` is true AND `args.config` equals `'./carburetor.yml'` (the default, meaning no explicit --config), dynamically import `WizardSession`, instantiate it, call `session.run(args.dryRun, args.verbose)` to get the request, then call `this.executeRequest(request, args)` and return
 
-**Checkpoint**: `carborator deploy --interactive` starts wizard, collects non-credential inputs, shows summary, and calls `manager.deploy`. Existing file-based path is unchanged.
+**Checkpoint**: `carburetor deploy --interactive` starts wizard, collects non-credential inputs, shows summary, and calls `manager.deploy`. Existing file-based path is unchanged.
 
 ---
 
@@ -78,16 +78,16 @@ description: "Task list for 004-interactive-wizard"
 
 ## Phase 5: User Story 3 — Wizard Dry-Run Mode (Priority: P3)
 
-**Goal**: Running `carborator deploy --interactive --dry-run` collects all wizard inputs and then calls `manager.validate()` instead of `manager.deploy()`, printing credential pass/fail without deploying.
+**Goal**: Running `carburetor deploy --interactive --dry-run` collects all wizard inputs and then calls `manager.validate()` instead of `manager.deploy()`, printing credential pass/fail without deploying.
 
-**Independent Test**: Run `carborator deploy --interactive --dry-run`, complete all prompts, and verify output shows validation results with no deployment performed and exit code 0 on success.
+**Independent Test**: Run `carburetor deploy --interactive --dry-run`, complete all prompts, and verify output shows validation results with no deployment performed and exit code 0 on success.
 
 ### Implementation
 
 - [x] T017 [US3] Verify in `src/client/DeployCLI.ts` that `executeRequest()` correctly passes `args.dryRun` to the dry-run branch (`manager.validate`) — this should already work since the `dryRun` flag is threaded via `args`; if any adjustment is needed make it here
-- [x] T018 [US3] In `src/client/DeployCLI.ts`, add the `--interactive` + `--config` conflict path in `runDeploy`: if `args.interactive` is true AND `args.config` differs from `'./carborator.yml'` (meaning `--config` was explicitly set), write a warning to `process.stderr` and fall through to the normal file-based path
+- [x] T018 [US3] In `src/client/DeployCLI.ts`, add the `--interactive` + `--config` conflict path in `runDeploy`: if `args.interactive` is true AND `args.config` differs from `'./carburetor.yml'` (meaning `--config` was explicitly set), write a warning to `process.stderr` and fall through to the normal file-based path
 
-**Checkpoint**: `carborator deploy --interactive --dry-run` works end-to-end. `carborator deploy --interactive --config ./carborator.yml` prints warning and uses the config file.
+**Checkpoint**: `carburetor deploy --interactive --dry-run` works end-to-end. `carburetor deploy --interactive --config ./carburetor.yml` prints warning and uses the config file.
 
 ---
 
@@ -99,7 +99,7 @@ description: "Task list for 004-interactive-wizard"
 - [x] T020 [P] In `tests/unit/client/wizard/WizardSession.test.ts`, add a cancel test: mock the first `@clack/prompts` call to return the `cancel` symbol (use `Symbol()` matching `isCancel`), spy on `process.exit`, call `run()`, assert `process.exit(1)` was called
 - [x] T021 In `tests/unit/client/wizard/WizardSession.test.ts`, add SSH key choice tests: one test where Step 13 returns `'inline'` (assert `cspCredentials.sshKey` is set, `.sshKeyPath` is undefined), one where it returns `'path'` (assert `.sshKeyPath` is set, `.sshKey` is undefined)
 - [x] T022 Run `grep -r "IShippingEngine\|IOrchestratingEngine\|ShippingEngine\|OrchestratingEngine" src/client/wizard/` and verify zero results (SC-003 check)
-- [x] T023 [P] Create `README.md` at the repository root with a customer-facing guide covering: what carborator does (one-line description), installation (`bun build --compile`), the two usage modes (file-based with `carborator.yml` sample and interactive with `carborator deploy --interactive` annotated walkthrough showing each prompt step), the `--dry-run` flag, and a prerequisites section listing required env vars for each cloud platform
+- [x] T023 [P] Create `README.md` at the repository root with a customer-facing guide covering: what carburetor does (one-line description), installation (`bun build --compile`), the two usage modes (file-based with `carburetor.yml` sample and interactive with `carburetor deploy --interactive` annotated walkthrough showing each prompt step), the `--dry-run` flag, and a prerequisites section listing required env vars for each cloud platform
 - [x] T024 Run `bun test` and verify all tests pass including new WizardSession tests
 
 ---
@@ -144,7 +144,7 @@ Task T020: "Cancel-at-first-prompt test in tests/unit/client/wizard/WizardSessio
 1. Phase 1: Install `@clack/prompts` (T001)
 2. Phase 2: Create `prompts.ts` + `WizardSession` stub (T002–T003)
 3. Phase 3: Implement selection/text prompts, confirmation, request assembly, DeployCLI integration (T004–T011)
-4. **STOP and VALIDATE**: Run `carborator deploy --interactive` with dummy credential strings, confirm flow works end-to-end
+4. **STOP and VALIDATE**: Run `carburetor deploy --interactive` with dummy credential strings, confirm flow works end-to-end
 5. Proceed to Phase 4 (credentials), Phase 5 (dry-run), Phase 6 (polish)
 
 ### Full Delivery

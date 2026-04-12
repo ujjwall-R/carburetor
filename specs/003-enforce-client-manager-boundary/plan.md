@@ -162,6 +162,6 @@ it('returns valid=false with errors when shipping.validateCredentials reports fa
 
 - [ ] `grep -r "IShippingEngine" src/client/` returns no results
 - [ ] `bun test` passes with all existing assertions unchanged
-- [ ] `carborator deploy --dry-run` output identical to pre-refactor
-- [ ] `carborator validate` output identical to pre-refactor
+- [ ] `carburetor deploy --dry-run` output identical to pre-refactor
+- [ ] `carburetor validate` output identical to pre-refactor
 - [ ] `IDeploymentManager` has exactly one new method (`validate`), no existing methods changed

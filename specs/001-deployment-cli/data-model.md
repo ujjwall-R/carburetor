@@ -259,10 +259,10 @@ interface ValidationResult {
 
 ---
 
-## Configuration File Schema (`carborator.yml`)
+## Configuration File Schema (`carburetor.yml`)
 
 ```yaml
-# carborator.yml — lives at project root
+# carburetor.yml — lives at project root
 
 project:
   type: react                  # react | node | docker | custom
@@ -284,7 +284,7 @@ vcs:
   branch: main
 ```
 
-Credentials are **never** stored in `carborator.yml`. They are sourced from environment variables at runtime:
+Credentials are **never** stored in `carburetor.yml`. They are sourced from environment variables at runtime:
 
 | Platform | Environment Variables |
 |----------|-----------------------|

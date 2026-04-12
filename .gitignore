@@ -1,6 +1,6 @@
 node_modules/
 dist/
-carborator
+carburetor
 *.log
 .env
 .env.*
@@ -8,7 +8,7 @@ carborator
 .DS_Store
 *.tmp
 *.swp
-/tmp/carborator-*/
-carborator.yml
+/tmp/carburetor-*/
+carburetor.yml
 coverage/
 *.pem

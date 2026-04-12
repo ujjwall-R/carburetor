@@ -63,7 +63,7 @@
 
 ## Decision 6: Configuration File Format
 
-**Decision**: YAML (`carborator.yml`) parsed with `js-yaml`  
+**Decision**: YAML (`carburetor.yml`) parsed with `js-yaml`  
 **Rationale**: YAML is human-friendly for multi-line deployment config (env vars, platform settings). `js-yaml` is well-maintained and small. JSON would work but is noisier for config files.  
 **Alternatives considered**:
 - TOML — equally readable but less tooling ecosystem on Node/Bun
