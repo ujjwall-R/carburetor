@@ -62,6 +62,8 @@ export class ShippingEngine implements IShippingEngine {
       return {
         status: ExecutionStatus.Failed,
         platform: request.target.platform,
+        ...(pipelineResult.failedStep ? { failedStep: pipelineResult.failedStep } : {}),
+        completedSteps: pipelineResult.completedSteps,
       };
     }
 

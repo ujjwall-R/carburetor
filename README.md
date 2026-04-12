@@ -221,6 +221,81 @@ carborator version
 
 ---
 
+## Testing
+
+### Run all unit tests
+
+```bash
+bun test
+```
+
+Runs the full unit test suite across the Manager and Engine layers. Output lists each test name and a pass/fail count; exit code is `0` when all tests pass.
+
+### Run a single test file
+
+```bash
+bun test tests/unit/engines/OrchestratingEngine.test.ts
+```
+
+### Watch mode (reruns on file save)
+
+```bash
+bun test --watch
+```
+
+### Generate a coverage report
+
+```bash
+bun run test:coverage
+```
+
+Prints a per-file coverage table and writes `coverage/lcov.info` for use with any lcov viewer:
+
+```
+File                                            | % Funcs | % Lines | Uncovered Line #s
+src/engines/OrchestratingEngine.ts              |  100.00 |  100.00 |
+src/engines/ShippingEngine.ts                   |  100.00 |  100.00 |
+src/engines/executors/LocalPipelineExecutor.ts  |   66.67 |   89.61 | 86-93
+src/managers/DeploymentManager.ts               |  100.00 |  100.00 |
+```
+
+### Enforce coverage thresholds (CI gate)
+
+```bash
+bun run test:coverage:check
+```
+
+Runs the suite, generates coverage, then verifies per-layer minimums:
+
+| Layer | Line | Branch |
+|-------|------|--------|
+| `src/managers/` | ≥ 90% | ≥ 80% |
+| `src/engines/` | ≥ 88% | ≥ 80% |
+| Global | ≥ 85% | — |
+
+Exits `0` with `✓ Coverage thresholds met` on pass. Exits `1` with a named error message on violation — use as a required CI step to block low-coverage merges.
+
+### Test structure
+
+```
+tests/
+├── helpers/
+│   ├── fixtures.ts      ← shared test-data builders
+│   └── mocks.ts         ← interface mock factories (bun:test)
+└── unit/
+    ├── managers/
+    │   └── DeploymentManager.test.ts
+    ├── engines/
+    │   ├── OrchestratingEngine.test.ts
+    │   └── ShippingEngine.test.ts
+    └── executors/
+        └── LocalPipelineExecutor.test.ts
+```
+
+Unit tests mock all external I/O — no real VCS or cloud API calls are made.
+
+---
+
 ## Development
 
 ```bash

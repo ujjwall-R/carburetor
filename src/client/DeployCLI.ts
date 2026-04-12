@@ -191,7 +191,10 @@ export class DeployCLI {
         console.error(`\n✗ Deployment failed`);
         if (outcome.failedStep) {
           console.error(`  Failed step: ${outcome.failedStep.stepName}`);
-          if (outcome.failedStep.error) console.error(`  Error: ${outcome.failedStep.error}`);
+          if (outcome.failedStep.error) console.error(`  Reason: ${outcome.failedStep.error}`);
+          if (outcome.failedStep.output?.trim()) {
+            console.error(`  Output:\n${outcome.failedStep.output.trim().split('\n').map(l => `    ${l}`).join('\n')}`);
+          }
         }
         if (outcome.error) console.error(`  ${outcome.error}`);
         break;
