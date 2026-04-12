@@ -54,6 +54,15 @@ export class ConfigLoader {
         const creds: CSPCredentials = { accessKeyId, secretAccessKey };
         const sessionToken = process.env['AWS_SESSION_TOKEN'];
         if (sessionToken) creds['sessionToken'] = sessionToken;
+        // EC2 SSH credentials (only required when deploying to an EC2 instance)
+        const sshKey = process.env['CARBORATOR_EC2_SSH_KEY'];
+        const sshKeyPath = process.env['CARBORATOR_EC2_SSH_KEY_PATH'];
+        const sshUser = process.env['CARBORATOR_EC2_SSH_USER'];
+        const deployDir = process.env['CARBORATOR_EC2_DEPLOY_DIR'];
+        if (sshKey) creds['sshKey'] = sshKey;
+        if (sshKeyPath) creds['sshKeyPath'] = sshKeyPath;
+        if (sshUser) creds['sshUser'] = sshUser;
+        if (deployDir) creds['deployDir'] = deployDir;
         return creds;
       }
       case CloudPlatform.GCP: {

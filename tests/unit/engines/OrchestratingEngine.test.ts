@@ -39,11 +39,13 @@ describe('OrchestratingEngine', () => {
       expect(pipeline.steps).toHaveLength(3);
     });
 
-    it('NodeService uses custom outputDir in package step', () => {
+    it('NodeService uses custom outputDir as the primary candidate in package step', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.NodeService, buildConfig: { outputDir: 'build' } });
       const packageStep = pipeline.steps[2];
-      expect(packageStep?.command).toContain('build');
-      expect(packageStep?.command).not.toContain(' dist');
+      // configured dir must appear first in the probe loop
+      expect(packageStep?.command).toMatch(/for d in "build"/);
+      // common fallbacks are still included so a mis-configured outputDir doesn't hard-fail a working build
+      expect(packageStep?.command).toContain('"dist"');
     });
 
     it('Custom type produces an empty pipeline', () => {

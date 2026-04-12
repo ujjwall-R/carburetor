@@ -13,16 +13,25 @@ export class LocalPipelineExecutor implements IPipelineExecutor {
     const completedSteps: StepResult[] = [];
 
     for (const step of pipeline.steps) {
+      const stepLabel = step.command ? `[${step.name}] $ ${step.command}` : `[${step.name}]`;
+      process.stdout.write(`  → ${stepLabel}\n`);
+
       const result = await this.runStep(step, context.sourceDir, context.env);
       completedSteps.push(result);
 
       if (!result.success) {
+        process.stderr.write(`  ✗ Step failed: ${step.name} (exit: ${result.error ?? 'unknown'})\n`);
+        if (result.output.trim()) {
+          process.stderr.write(`  Output:\n${result.output.trim().split('\n').map(l => `    ${l}`).join('\n')}\n`);
+        }
         return {
           status: ExecutionStatus.Failed,
           completedSteps,
           failedStep: result,
         };
       }
+
+      process.stdout.write(`  ✓ ${step.name} (${result.durationMs}ms)\n`);
     }
 
     const artifact: DeployableArtifact = {

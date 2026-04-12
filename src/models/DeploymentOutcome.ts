@@ -11,6 +11,8 @@ export interface ShippingResult {
   endpoint?: string;
   trackingUrl?: string;
   platform: CloudPlatform;
+  failedStep?: StepResult;
+  completedSteps?: StepResult[];
 }
 
 export interface DeploymentOutcome {

@@ -38,8 +38,9 @@ export class DeploymentManager implements IDeploymentManager {
       status: result.status,
       ...(result.endpoint ? { endpoint: result.endpoint } : {}),
       ...(result.trackingUrl ? { trackingUrl: result.trackingUrl } : {}),
-      completedSteps: [],
-      ...(result.status === ExecutionStatus.Failed ? { error: 'Pipeline execution failed' } : {}),
+      completedSteps: result.completedSteps ?? [],
+      ...(result.failedStep ? { failedStep: result.failedStep } : {}),
+      ...(result.status === ExecutionStatus.Failed && !result.failedStep ? { error: 'Pipeline execution failed' } : {}),
       totalDurationMs: Date.now() - start,
     };
   }
