@@ -10,11 +10,7 @@ if [[ "$(uname)" != "Darwin" ]]; then
   exit 0
 fi
 
-<<<<<<< HEAD
 ENTITLEMENTS="$(mktemp /tmp/carburetor-entitlements.XXXX.plist)"
-=======
-ENTITLEMENTS="$(mktemp /tmp/carborator-entitlements.XXXX.plist)"
->>>>>>> main
 trap 'rm -f "$ENTITLEMENTS"' EXIT
 
 cat > "$ENTITLEMENTS" <<'EOF'
