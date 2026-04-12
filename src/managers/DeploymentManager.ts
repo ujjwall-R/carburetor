@@ -1,6 +1,6 @@
 import { ExecutionStatus } from '../models/enums.js';
 import type { DeploymentRequest } from '../models/DeploymentRequest.js';
-import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
+import type { DeploymentOutcome, ValidationResult } from '../models/DeploymentOutcome.js';
 import type { IDeploymentManager } from './IDeploymentManager.js';
 import type { IOrchestratingEngine } from '../engines/IOrchestratingEngine.js';
 import type { IShippingEngine } from '../engines/IShippingEngine.js';
@@ -43,6 +43,10 @@ export class DeploymentManager implements IDeploymentManager {
       ...(result.status === ExecutionStatus.Failed && !result.failedStep ? { error: 'Pipeline execution failed' } : {}),
       totalDurationMs: Date.now() - start,
     };
+  }
+
+  async validate(request: DeploymentRequest): Promise<ValidationResult> {
+    return this.shipping.validateCredentials(request);
   }
 
   private progress(message: string): void {
