@@ -51,9 +51,13 @@ bun run src/index.ts deploy
 
 ### Option 2 — Build a single binary
 
+#### For your current platform only
+
 ```bash
-bun build --compile --outfile carborator src/index.ts
+bun run build
 ```
+
+Produces a signed, ready-to-run `./carborator` binary in the project root.
 
 Move it somewhere on your `$PATH`:
 
@@ -65,6 +69,47 @@ Then use it from anywhere:
 
 ```bash
 carborator deploy
+```
+
+#### For all platforms (distribution)
+
+```bash
+bun run build:all
+```
+
+Produces binaries for every platform under `dist/`:
+
+```
+dist/
+  macos-arm64/carborator
+  macos-x64/carborator
+  linux-arm64/carborator
+  linux-x64/carborator
+  windows-x64/carborator.exe
+```
+
+macOS binaries are automatically ad-hoc signed so Gatekeeper doesn't block them. Linux and Windows binaries require no signing. Ship the folder matching the customer's platform.
+
+#### Releasing a new version
+
+1. Bump the version in `package.json`:
+
+```json
+{
+  "version": "1.2.0"
+}
+```
+
+2. Rebuild the binaries:
+
+```bash
+bun run build:all
+```
+
+The version is read directly from `package.json` at build time — no other files need updating. Verify with:
+
+```bash
+./dist/macos-arm64/carborator --version
 ```
 
 ---

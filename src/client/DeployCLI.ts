@@ -1,9 +1,12 @@
 import { Command } from 'commander';
+import { createRequire } from 'module';
 import { ExecutionStatus } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
 import type { DeploymentRequest } from '../models/DeploymentRequest.js';
 import type { CarboratorConfig, ConfigLoader } from '../config/ConfigLoader.js';
+
+const { version } = createRequire(import.meta.url)('../../package.json') as { version: string };
 
 interface CLIArgs {
   config: string;
@@ -32,7 +35,7 @@ export class DeployCLI {
   private buildProgram(): Command {
     const program = new Command('carborator')
       .description('Deploy applications to cloud platforms')
-      .version('0.1.0');
+      .version(version);
 
     program
       .command('deploy')
