@@ -2,7 +2,7 @@ import { mock } from 'bun:test';
 import { ExecutionStatus, CloudPlatform } from '../../src/models/enums.js';
 import type { VCSConfig, VCSCredentials, CSPCredentials, DeploymentTarget } from '../../src/models/DeploymentRequest.js';
 import type { VCSProvider } from '../../src/models/enums.js';
-import type { Pipeline, ExecutionContext, PipelineResult } from '../../src/models/Pipeline.js';
+import type { Pipeline, ExecutionContext, PipelineResult, PipelineStep } from '../../src/models/Pipeline.js';
 import type { Project } from '../../src/models/DeploymentRequest.js';
 import type { DeploymentRequest } from '../../src/models/DeploymentRequest.js';
 import type { DeployableArtifact } from '../../src/models/DeployableArtifact.js';
@@ -33,7 +33,7 @@ export const makeCSPAccessMock = () => {
       Promise.resolve(true)
   );
   const deploy = mock(
-    (_artifact: DeployableArtifact, _target: DeploymentTarget, _credentials: CSPCredentials): Promise<DeploymentResult> =>
+    (_artifact: DeployableArtifact, _target: DeploymentTarget, _credentials: CSPCredentials, _steps: PipelineStep[]): Promise<DeploymentResult> =>
       Promise.resolve(makeDeploymentResult())
   );
   const getEndpoint = mock(
@@ -52,7 +52,7 @@ export const makeExecutorMock = () => {
 
 export const makeOrchestratingEngineMock = () => {
   const buildPipeline = mock(
-    (_project: Project, _sourceDir?: string): Pipeline => makePipeline()
+    (_project: Project, _sourceDir?: string, _deployDir?: string): Pipeline => makePipeline()
   );
   return { buildPipeline };
 };

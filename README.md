@@ -234,6 +234,137 @@ carburetor deploy --config ./config/prod.yml
 carburetor deploy --json
 ```
 
+### Docker EC2 Deployment
+
+Deploy a single Docker image directly to an EC2 instance — no VCS token required. You point carburetor at a Dockerfile; it ships the file to EC2, builds the image there, and starts the container on port 80.
+
+**Pipeline** (runs on every `carburetor deploy` invocation):
+
+```
+Copy Dockerfile locally → Transfer to EC2 → Install Docker (if absent) → Build image on EC2 → Free port 80 → Start container
+```
+
+Re-running the command always gets the latest code (build runs with `--no-cache`) and replaces the existing container automatically.
+
+#### 1. Write your Dockerfile
+
+All git cloning and build logic lives inside your Dockerfile — carburetor just ships it. A typical React app Dockerfile looks like:
+
+```dockerfile
+FROM node:20-alpine AS builder
+RUN apk add --no-cache git
+ARG GIT_REPO_URL=https://github.com/your-org/your-react-app.git
+ARG GIT_BRANCH=main
+WORKDIR /app
+RUN git clone --depth 1 --branch ${GIT_BRANCH} ${GIT_REPO_URL} .
+RUN npm ci && npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=builder /app/out /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### 2. Configure `carburetor.yml`
+
+Only the `target` section is required — no `vcs` section needed for Docker deployments:
+
+```yaml
+project:
+  type: docker
+  build:
+    dockerfilePath: ./Dockerfile   # relative to this file, or use --dockerfile flag
+
+target:
+  platform: aws
+  region: us-east-1
+  environment: production
+  resourceId: i-0123456789abcdef0  # your EC2 instance ID
+```
+
+#### 3. Set environment variables
+
+```bash
+export AWS_ACCESS_KEY_ID=AKIA...
+export AWS_SECRET_ACCESS_KEY=...
+export CARBORATOR_EC2_SSH_KEY_PATH=/path/to/your-key.pem
+export CARBORATOR_EC2_SSH_USER=ec2-user       # default; omit if using ec2-user
+```
+
+#### 4. Deploy
+
+```bash
+# From config file
+carburetor deploy
+
+# Or pass the Dockerfile path directly (no project.type needed in config)
+carburetor deploy --dockerfile ./Dockerfile
+
+# Using the included React sample
+carburetor deploy --dockerfile ./examples/react-app/Dockerfile
+
+# Dry-run — validate credentials without deploying
+carburetor deploy --dockerfile ./Dockerfile --dry-run
+```
+
+New flag:
+
+```
+--dockerfile <path>   Path to Dockerfile (enables Docker EC2 deploy mode, always serves on port 80)
+```
+
+> The container always binds to port 80 on the EC2 host. Ensure your EC2 security group allows inbound TCP on port 80.
+
+#### 5. Sample output
+
+```
+  → [Prepare Dockerfile] $ cp /abs/Dockerfile artifact.tar.gz
+  ✓ Prepare Dockerfile (5ms)
+  → [Transfer artifact to EC2]
+  ✓ Transfer artifact to EC2
+  → [Install Docker on EC2]
+  ✓ Install Docker on EC2
+  → [Build Docker image on EC2]
+  ✓ Build Docker image on EC2
+  → [Free port 80 and remove old container]
+  ✓ Free port 80 and remove old container
+  → [Start container]
+  ✓ Start container
+
+✓ Deployed successfully
+  Endpoint: http://ec2-12-34-56-78.compute-1.amazonaws.com
+  Total time: 85.2s
+```
+
+#### Sample Dockerfile — React app from Git
+
+`examples/react-app/Dockerfile` clones a React app from a Git repository, builds it, and serves it via nginx. Edit `GIT_REPO_URL` to point at your own repository before deploying:
+
+```dockerfile
+# Stage 1: clone + build
+FROM node:20-alpine AS builder
+RUN apk add --no-cache git
+ARG GIT_REPO_URL=https://github.com/your-org/your-react-app.git
+ARG GIT_BRANCH=main
+WORKDIR /app
+RUN git clone --depth 1 --branch ${GIT_BRANCH} ${GIT_REPO_URL} .
+RUN npm ci && npm run build
+
+# Stage 2: serve
+FROM nginx:1.27-alpine
+COPY --from=builder /app/out /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Deploy it to EC2 with one command:
+
+```bash
+carburetor deploy --dockerfile ./examples/react-app/Dockerfile
+```
+
+---
+
 ### Interactive Wizard (`--interactive`)
 
 The wizard guides you through every deployment decision step by step — no `carburetor.yml` required.
@@ -300,12 +431,25 @@ carburetor version
 
 ## How it works
 
+### VCS-based deployments (React, Node, custom)
+
 1. **Validate** — checks VCS and cloud credentials
-2. **Plan** — detects project type (React, Node, Docker, or custom), builds a pipeline of steps
+2. **Plan** — detects project type, builds a pipeline of steps
 3. **Fetch** — clones the configured repo and branch into a temp directory
 4. **Build** — runs the pipeline steps locally (install deps → build → package artifact)
 5. **Ship** — uploads the artifact to the configured cloud platform
 6. **Report** — prints the live endpoint URL on success
+
+### Docker EC2 deployments
+
+1. **Validate** — checks AWS and SSH credentials (no VCS token needed)
+2. **Copy** — copies your Dockerfile locally as the artifact
+3. **Transfer** — SCPs the Dockerfile to the EC2 instance
+4. **Install** — installs Docker on EC2 if not already present (idempotent)
+5. **Build** — runs `docker build --no-cache` on EC2; your Dockerfile handles all git cloning and compilation
+6. **Free** — stops nginx and removes any existing `carburetor-app` container to clear port 80
+7. **Start** — starts the new container on port 80
+8. **Report** — prints the accessible EC2 endpoint
 
 ```
   → Validating credentials...
@@ -388,7 +532,8 @@ tests/
     │   └── DeploymentManager.test.ts
     ├── engines/
     │   ├── OrchestratingEngine.test.ts
-    │   └── ShippingEngine.test.ts
+    │   ├── ShippingEngine.test.ts
+    │   └── DockerOrchestration.test.ts
     └── executors/
         └── LocalPipelineExecutor.test.ts
 ```

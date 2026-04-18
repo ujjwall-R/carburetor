@@ -1,5 +1,6 @@
 import type { DeploymentTarget, CSPCredentials } from '../models/DeploymentRequest.js';
 import type { DeployableArtifact } from '../models/DeployableArtifact.js';
+import type { PipelineStep } from '../models/Pipeline.js';
 import type { CloudPlatform } from '../models/enums.js';
 
 export interface DeploymentResult {
@@ -10,6 +11,6 @@ export interface DeploymentResult {
 
 export interface ICSPAccess {
   validateCredentials(credentials: CSPCredentials, platform: CloudPlatform): Promise<boolean>;
-  deploy(artifact: DeployableArtifact, target: DeploymentTarget, credentials: CSPCredentials): Promise<DeploymentResult>;
+  deploy(artifact: DeployableArtifact, target: DeploymentTarget, credentials: CSPCredentials, steps: PipelineStep[]): Promise<DeploymentResult>;
   getEndpoint(result: DeploymentResult): string;
 }

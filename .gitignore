@@ -13,3 +13,5 @@ carburetor
 carburetor.yml
 coverage/
 *.pem
+carburetor_docker.yml
+examples/*/Dockerfile

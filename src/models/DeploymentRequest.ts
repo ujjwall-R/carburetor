@@ -4,6 +4,8 @@ export interface BuildConfig {
   buildScript?: string;
   outputDir?: string;
   env?: Record<string, string>;
+  dockerfilePath?: string;
+  containerPort?: number;
 }
 
 export interface Project {

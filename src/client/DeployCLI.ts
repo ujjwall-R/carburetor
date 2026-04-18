@@ -1,6 +1,7 @@
 import { Command } from 'commander';
+import { resolve } from 'path';
 import { version } from '../../package.json';
-import { ExecutionStatus } from '../models/enums.js';
+import { ExecutionStatus, ProjectType, VCSProvider } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
 import type { DeploymentRequest } from '../models/DeploymentRequest.js';
@@ -14,6 +15,7 @@ interface CLIArgs {
   dryRun: boolean;
   verbose: boolean;
   json: boolean;
+  dockerfile?: string;
 }
 
 export class DeployCLI {
@@ -45,6 +47,7 @@ export class DeployCLI {
       .option('--dry-run', 'Validate config and credentials without deploying', false)
       .option('--json', 'Emit newline-delimited JSON events', false)
       .option('-v, --verbose', 'Show full step output', false)
+      .option('--dockerfile <path>', 'Path to Dockerfile (enables Docker EC2 deploy mode, always serves on port 80)')
       .action(async (opts: CLIArgs) => {
         await this.runDeploy(opts);
       });
@@ -81,6 +84,12 @@ export class DeployCLI {
       process.stderr.write('Warning: --interactive ignored when --config is provided. Using config file.\n');
     }
 
+    // Docker mode — --dockerfile flag triggers a Docker EC2 deployment
+    if (args.dockerfile) {
+      await this.runDockerDeploy(args);
+      return;
+    }
+
     // File-based path
     let config: CarboratorConfig;
     try {
@@ -97,10 +106,14 @@ export class DeployCLI {
       config.target.environment = args.env;
     }
 
+    const isDockerConfig = config.project.type === ProjectType.Docker;
+
     let vcsCredentials: import('../models/DeploymentRequest.js').VCSCredentials;
     let cspCredentials: import('../models/DeploymentRequest.js').CSPCredentials;
     try {
-      vcsCredentials = this.configLoader.resolveVCSCredentials();
+      vcsCredentials = isDockerConfig
+        ? { token: '' }
+        : this.configLoader.resolveVCSCredentials();
       cspCredentials = this.configLoader.resolveCSPCredentials(config.target.platform);
     } catch (err) {
       this.printError((err as Error).message);
@@ -112,6 +125,48 @@ export class DeployCLI {
       target: config.target,
       vcsConfig: config.vcs,
       vcsCredentials,
+      cspCredentials,
+      dryRun: args.dryRun,
+      verbose: args.verbose,
+    };
+
+    await this.executeRequest(request, args);
+  }
+
+  private async runDockerDeploy(args: CLIArgs): Promise<void> {
+    const dockerfilePath = resolve(args.dockerfile!);
+
+    let config: CarboratorConfig;
+    try {
+      config = this.configLoader.load(args.config);
+    } catch (err) {
+      this.printError(`Failed to load config: ${(err as Error).message}`);
+      process.exit(1);
+    }
+
+    if (args.target) {
+      config.target.platform = args.target as import('../models/enums.js').CloudPlatform;
+    }
+
+    let cspCredentials: import('../models/DeploymentRequest.js').CSPCredentials;
+    try {
+      cspCredentials = this.configLoader.resolveCSPCredentials(config.target.platform);
+    } catch (err) {
+      this.printError((err as Error).message);
+      process.exit(1);
+    }
+
+    const request: DeploymentRequest = {
+      project: {
+        type: ProjectType.Docker,
+        buildConfig: {
+          dockerfilePath,
+          ...(config.project.build.env ? { env: config.project.build.env } : {}),
+        },
+      },
+      target: config.target,
+      vcsConfig: { provider: VCSProvider.GitHub, repoUrl: '', branch: 'main' },
+      vcsCredentials: { token: '' },
       cspCredentials,
       dryRun: args.dryRun,
       verbose: args.verbose,

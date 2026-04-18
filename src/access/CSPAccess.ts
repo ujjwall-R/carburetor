@@ -5,9 +5,10 @@ import { spawn } from 'child_process';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { S3Client, PutObjectCommand, CreateBucketCommand, HeadBucketCommand } from '@aws-sdk/client-s3';
 import { EC2Client, DescribeInstancesCommand } from '@aws-sdk/client-ec2';
-import { CloudPlatform } from '../models/enums.js';
+import { CloudPlatform, StepType } from '../models/enums.js';
 import type { DeploymentTarget, CSPCredentials } from '../models/DeploymentRequest.js';
 import type { DeployableArtifact } from '../models/DeployableArtifact.js';
+import type { PipelineStep } from '../models/Pipeline.js';
 import type { ICSPAccess, DeploymentResult } from './ICSPAccess.js';
 
 export class CSPAccess implements ICSPAccess {
@@ -31,12 +32,13 @@ export class CSPAccess implements ICSPAccess {
   async deploy(
     artifact: DeployableArtifact,
     target: DeploymentTarget,
-    credentials: CSPCredentials
+    credentials: CSPCredentials,
+    steps: PipelineStep[]
   ): Promise<DeploymentResult> {
     switch (target.platform) {
       case CloudPlatform.AWS:
         return target.resourceId.startsWith('i-')
-          ? this.deployToEC2(artifact, target, credentials)
+          ? this.deployToEC2(artifact, target, credentials, steps)
           : this.deployToS3(artifact, target, credentials);
       default:
         throw new Error(`Platform not yet supported: ${target.platform}`);
@@ -91,7 +93,8 @@ export class CSPAccess implements ICSPAccess {
   private async deployToEC2(
     artifact: DeployableArtifact,
     target: DeploymentTarget,
-    credentials: CSPCredentials
+    credentials: CSPCredentials,
+    steps: PipelineStep[]
   ): Promise<DeploymentResult> {
     const sshKey = credentials['sshKey'] as string | undefined;
     const sshKeyPath = credentials['sshKeyPath'] as string | undefined;
@@ -104,10 +107,7 @@ export class CSPAccess implements ICSPAccess {
 
     const publicDns = await this.getEC2PublicDns(credentials, target.region, target.resourceId);
     const sshUser = String(credentials['sshUser'] ?? 'ec2-user');
-    const deployDir = String(credentials['deployDir'] ?? '/var/www/html');
 
-    // Write key to a temp file if content was provided via env var;
-    // enforce 0600 on path-based keys too so SSH doesn't reject them.
     let keyFile = sshKeyPath ?? '';
     let tempKeyFile: string | undefined;
     if (sshKey) {
@@ -128,36 +128,28 @@ export class CSPAccess implements ICSPAccess {
       ];
 
       // Transfer artifact
+      process.stdout.write(`  → [Transfer artifact to EC2]\n`);
       await this.runCommand('scp', [
         ...sshOpts,
         artifact.path,
         `${sshUser}@${publicDns}:/tmp/carburetor-artifact.tar.gz`,
       ]);
+      process.stdout.write(`  ✓ Transfer artifact to EC2\n`);
 
-      // Ensure nginx is installed, running, and serving deployDir, then extract artifact
-      const deployCmd = [
-        // Install nginx if missing — works on Amazon Linux (dnf/yum) and Debian/Ubuntu (apt)
-        'command -v nginx >/dev/null 2>&1 || (' +
-          'if command -v dnf >/dev/null 2>&1; then sudo dnf install nginx -y; ' +
-          'elif command -v yum >/dev/null 2>&1; then sudo yum install nginx -y; ' +
-          'else sudo apt-get install nginx -y; fi)',
-        // Write carburetor nginx config: correct document root + SPA routing
-        `printf 'server {\\n    listen 80 default_server;\\n    server_name _;\\n    root ${deployDir};\\n    index index.html;\\n    location / { try_files $uri $uri/ /index.html; }\\n}\\n' | sudo tee /etc/nginx/conf.d/carburetor.conf > /dev/null`,
-        // Start and enable nginx
-        'sudo systemctl enable nginx',
-        'sudo systemctl start nginx',
-        // Ensure deploy directory exists
-        `sudo mkdir -p ${deployDir}`,
-        // Clear old files before extracting so stale assets don't linger
-        `sudo find ${deployDir} -mindepth 1 -delete`,
-        // Extract artifact (strip top-level folder from the tar, e.g. build/ -> deployDir/)
-        `sudo tar -xzf /tmp/carburetor-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
-        // Clean up
-        `rm /tmp/carburetor-artifact.tar.gz`,
-        // Validate config then reload nginx
-        'sudo nginx -t && sudo systemctl reload nginx',
-      ].join(' && ');
-      await this.runCommand('ssh', [...sshOpts, `${sshUser}@${publicDns}`, deployCmd]);
+      // Execute each Ship step on the remote host via SSH
+      const shipSteps = steps.filter(s => s.type === StepType.Ship);
+      for (const step of shipSteps) {
+        if (step.command) {
+          process.stdout.write(`  → [${step.name}]\n`);
+          try {
+            await this.runCommand('ssh', [...sshOpts, `${sshUser}@${publicDns}`, step.command]);
+            process.stdout.write(`  ✓ ${step.name}\n`);
+          } catch (err) {
+            process.stderr.write(`  ✗ ${step.name}\n`);
+            throw err;
+          }
+        }
+      }
     } finally {
       if (tempKeyFile) {
         try { unlinkSync(tempKeyFile); } catch { /* ignore */ }

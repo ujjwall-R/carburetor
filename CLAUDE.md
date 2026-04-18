@@ -84,6 +84,8 @@ Four layers, each answering a distinct question:
 - N/A — wizard session is in-memory only; no persistence (ujjwal/baseSetup)
 - TypeScript 5.5 (strict mode) + `bun:test` (existing), `fast-xml-parser` ^4.3.0 (new — XML parsing), `js-yaml` (existing — YAML; unchanged) (ujjwal/baseSetup)
 - N/A — stateless per invocation; test fixtures are static files on disk (ujjwal/baseSetup)
+- TypeScript 5.5 (strict mode) + `commander` (CLI), `@aws-sdk/client-ec2` (instance lookup), `@aws-sdk/client-sts` (credential validation); no new dependencies — Docker CLI invoked via child process (already established pattern) (006-docker-ec2-deploy)
+- N/A — stateless per invocation; temp files in OS `/tmp` (006-docker-ec2-deploy)
 
 ## Recent Changes
 - 001-deployment-cli: Added TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)

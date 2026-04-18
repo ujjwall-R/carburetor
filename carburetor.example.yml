@@ -28,3 +28,26 @@ executor:
   #   token: "${JENKINS_API_TOKEN}"
   #   waitForCompletion: true
   #   pollIntervalMs: 10000
+
+# ── Docker EC2 deploy example ─────────────────────────────────────────────────
+# Use this config (with no vcs section) to deploy a single Docker image to EC2.
+# Required env vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
+#   CARBORATOR_EC2_SSH_KEY or CARBORATOR_EC2_SSH_KEY_PATH, CARBORATOR_EC2_SSH_USER
+#
+# Run:   carburetor deploy --dockerfile ./Dockerfile --port 3000
+# Or:    carburetor deploy   (when dockerfilePath is set in this file)
+#
+# Redeployment is automatic — the running container is replaced on every deploy.
+#
+# project:
+#   type: docker
+#   build:
+#     dockerfilePath: ./Dockerfile   # relative to this config file
+#     containerPort: 3000            # port the container listens on (also bound on the host)
+#
+# target:
+#   platform: aws
+#   region: us-east-1
+#   environment: production
+#   resourceId: i-0123456789abcdef0  # EC2 instance ID (must start with i-)
+# ─────────────────────────────────────────────────────────────────────────────
