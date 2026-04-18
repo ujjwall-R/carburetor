@@ -54,7 +54,7 @@ export class OrchestratingEngine implements IOrchestratingEngine {
             id: 'install-deps',
             name: 'Install dependencies',
             type: StepType.Build,
-            command: 'npm install --frozen-lockfile',
+            command: 'npm ci',
           },
           {
             id: 'build-react',
@@ -76,7 +76,7 @@ export class OrchestratingEngine implements IOrchestratingEngine {
             id: 'install-deps',
             name: 'Install dependencies',
             type: StepType.Build,
-            command: 'npm install --frozen-lockfile',
+            command: 'npm ci',
           },
           {
             id: 'build-node',
@@ -114,7 +114,7 @@ export class OrchestratingEngine implements IOrchestratingEngine {
     const extraArgs = extra ? ` ${extra}` : '';
     return (
       `OUTPUT=; for d in ${dirList}; do [ -d "$d" ] && OUTPUT="$d" && break; done; ` +
-      `[ -n "$OUTPUT" ] && tar -czf artifact.tar.gz "$OUTPUT"${extraArgs} || ` +
+      `[ -n "$OUTPUT" ] && COPYFILE_DISABLE=1 tar -czf artifact.tar.gz "$OUTPUT"${extraArgs} || ` +
       `{ echo "Build output not found (tried: ${dirs.join(', ')})" >&2; exit 1; }`
     );
   }
