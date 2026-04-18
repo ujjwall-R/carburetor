@@ -7,6 +7,7 @@ import type { IOrchestratingEngine } from './IOrchestratingEngine.js';
 import type { IPipelineOrchestration } from './orchestrations/IPipelineOrchestration.js';
 import { ReactAppOrchestration } from './orchestrations/ReactAppOrchestration.js';
 import { NodeServiceOrchestration } from './orchestrations/NodeServiceOrchestration.js';
+import { DockerOrchestration } from './orchestrations/DockerOrchestration.js';
 import { CustomOrchestration } from './orchestrations/CustomOrchestration.js';
 
 export class OrchestratingEngine implements IOrchestratingEngine {
@@ -23,7 +24,8 @@ export class OrchestratingEngine implements IOrchestratingEngine {
         return new ReactAppOrchestration();
       case ProjectType.NodeService:
         return new NodeServiceOrchestration();
-      /* istanbul ignore next — Docker orchestration not yet implemented */
+      case ProjectType.Docker:
+        return new DockerOrchestration();
       default:
         return new CustomOrchestration();
     }

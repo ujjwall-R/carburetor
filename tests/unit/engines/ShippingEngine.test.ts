@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { ShippingEngine } from '../../../src/engines/ShippingEngine.js';
-import { ExecutionStatus, StepType } from '../../../src/models/enums.js';
+import { ExecutionStatus, ProjectType, StepType } from '../../../src/models/enums.js';
 import {
   makeDeploymentRequest,
   makePipeline,
@@ -128,6 +128,54 @@ describe('ShippingEngine', () => {
       const destDir = vcsMock.fetchSource.mock.calls[0]?.[2];
       const context = executorMock.execute.mock.calls[0]?.[1];
       expect(context?.sourceDir).toBe(destDir);
+    });
+  });
+
+  // ─── Docker ───────────────────────────────────────────────────────────────
+
+  describe('run — Docker project type', () => {
+    const dockerPipeline = makePipeline({ projectType: ProjectType.Docker });
+
+    it('returns Failed immediately when dockerfilePath is not set', async () => {
+      const request = makeDeploymentRequest({ project: { type: ProjectType.Docker, buildConfig: {} } });
+      const result = await engine.run(dockerPipeline, request);
+      expect(result.status).toBe(ExecutionStatus.Failed);
+      expect(result.failedStep?.stepId).toBe('validate-dockerfile');
+    });
+
+    it('returns Failed immediately when dockerfilePath does not exist on disk', async () => {
+      const request = makeDeploymentRequest({
+        project: { type: ProjectType.Docker, buildConfig: { dockerfilePath: '/nonexistent/Dockerfile' } },
+      });
+      const result = await engine.run(dockerPipeline, request);
+      expect(result.status).toBe(ExecutionStatus.Failed);
+      expect(result.failedStep?.stepId).toBe('validate-dockerfile');
+    });
+
+    it('skips vcsAccess.fetchSource for Docker pipelines', async () => {
+      // Supply a real file path that exists on disk (/etc/hosts is always present)
+      const request = makeDeploymentRequest({
+        project: { type: ProjectType.Docker, buildConfig: { dockerfilePath: '/etc/hosts' } },
+      });
+      await engine.run(dockerPipeline, request);
+      expect(vcsMock.fetchSource.mock.calls).toHaveLength(0);
+    });
+  });
+
+  // ─── validateCredentials — Docker ─────────────────────────────────────────
+
+  describe('validateCredentials — Docker project type', () => {
+    it('skips VCS validation and only validates CSP credentials', async () => {
+      const request = makeDeploymentRequest({ project: { type: ProjectType.Docker, buildConfig: {} } });
+      await engine.validateCredentials(request);
+      expect(vcsMock.validateCredentials.mock.calls).toHaveLength(0);
+      expect(cspMock.validateCredentials.mock.calls).toHaveLength(1);
+    });
+
+    it('returns valid=true when CSP credentials are valid (no VCS check)', async () => {
+      const request = makeDeploymentRequest({ project: { type: ProjectType.Docker, buildConfig: {} } });
+      const result = await engine.validateCredentials(request);
+      expect(result.valid).toBe(true);
     });
   });
 });

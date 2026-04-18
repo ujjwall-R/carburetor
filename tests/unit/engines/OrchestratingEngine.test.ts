@@ -96,12 +96,13 @@ describe('OrchestratingEngine', () => {
       expect(pipeline.steps.every(s => s.type !== StepType.Ship)).toBe(true);
     });
 
-    // known gap: Docker step generation not yet implemented
-    it('Docker type falls to default — produces empty pipeline (known gap: Docker steps not yet implemented)', () => {
-      const pipeline = engine.buildPipeline({ type: ProjectType.Docker, buildConfig: {} });
+    it('Docker type with valid buildConfig produces a 5-step pipeline', () => {
+      const pipeline = engine.buildPipeline({
+        type: ProjectType.Docker,
+        buildConfig: { dockerfilePath: '/app/Dockerfile' },
+      });
       expect(pipeline.projectType).toBe(ProjectType.Docker);
-      // TODO: update this test when Docker step generation is implemented
-      expect(pipeline.steps).toHaveLength(0);
+      expect(pipeline.steps).toHaveLength(5);
     });
   });
 
@@ -119,9 +120,14 @@ describe('OrchestratingEngine', () => {
     });
 
     it('detects Docker when Dockerfile is present', () => {
-      writeFileSync(join(tmpDir, 'Dockerfile'), 'FROM node:20\n');
-      const pipeline = engine.buildPipeline({ buildConfig: {} }, tmpDir);
+      const dockerfilePath = join(tmpDir, 'Dockerfile');
+      writeFileSync(dockerfilePath, 'FROM node:20\n');
+      const pipeline = engine.buildPipeline(
+        { buildConfig: { dockerfilePath } },
+        tmpDir
+      );
       expect(pipeline.projectType).toBe(ProjectType.Docker);
+      expect(pipeline.steps).toHaveLength(5);
     });
 
     it('detects ReactApp when react is in dependencies', () => {
@@ -161,6 +167,30 @@ describe('OrchestratingEngine', () => {
       const pipeline = engine.buildPipeline({ buildConfig: {} }, tmpDir);
       expect(pipeline.projectType).toBe(ProjectType.Custom);
       expect(pipeline.steps).toHaveLength(0);
+    });
+  });
+
+  // ─── Docker ───────────────────────────────────────────────────────────────
+
+  describe('buildPipeline — Docker', () => {
+    it('Docker produces a 5-step pipeline', () => {
+      const pipeline = engine.buildPipeline({
+        type: ProjectType.Docker,
+        buildConfig: { dockerfilePath: '/app/Dockerfile' },
+      });
+      expect(pipeline.projectType).toBe(ProjectType.Docker);
+      expect(pipeline.steps).toHaveLength(5);
+    });
+
+    it('Docker pipeline has 1 local step and 4 Ship steps', () => {
+      const pipeline = engine.buildPipeline({
+        type: ProjectType.Docker,
+        buildConfig: { dockerfilePath: '/app/Dockerfile' },
+      });
+      const shipSteps = pipeline.steps.filter(s => s.type === StepType.Ship);
+      const localSteps = pipeline.steps.filter(s => s.type !== StepType.Ship);
+      expect(shipSteps).toHaveLength(4);
+      expect(localSteps).toHaveLength(1);
     });
   });
 

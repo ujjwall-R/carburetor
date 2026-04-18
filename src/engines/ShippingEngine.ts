@@ -1,7 +1,7 @@
-import { mkdtempSync } from 'fs';
+import { mkdtempSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { ExecutionStatus } from '../models/enums.js';
+import { ExecutionStatus, ProjectType } from '../models/enums.js';
 import type { DeploymentRequest } from '../models/DeploymentRequest.js';
 import type { Pipeline } from '../models/Pipeline.js';
 import type { SourceArtifact } from '../models/SourceArtifact.js';
@@ -20,13 +20,16 @@ export class ShippingEngine implements IShippingEngine {
 
   async validateCredentials(request: DeploymentRequest): Promise<ValidationResult> {
     const errors: string[] = [];
+    const isDocker = request.project.type === ProjectType.Docker;
 
-    const vcsValid = await this.vcsAccess
-      .validateCredentials(request.vcsCredentials, request.vcsConfig.provider)
-      .catch((err: Error) => { errors.push(`VCS: ${err.message}`); return false; });
+    if (!isDocker) {
+      const vcsValid = await this.vcsAccess
+        .validateCredentials(request.vcsCredentials, request.vcsConfig.provider)
+        .catch((err: Error) => { errors.push(`VCS: ${err.message}`); return false; });
 
-    if (!vcsValid) {
-      errors.push(`VCS credentials invalid for provider: ${request.vcsConfig.provider}`);
+      if (!vcsValid) {
+        errors.push(`VCS credentials invalid for provider: ${request.vcsConfig.provider}`);
+      }
     }
 
     const cspValid = await this.cspAccess
@@ -41,7 +44,30 @@ export class ShippingEngine implements IShippingEngine {
   }
 
   async run(pipeline: Pipeline, request: DeploymentRequest): Promise<ShippingResult> {
-    const source = await this.fetchSource(request);
+    const isDocker = pipeline.projectType === ProjectType.Docker;
+
+    if (isDocker) {
+      const { dockerfilePath } = request.project.buildConfig;
+      if (!dockerfilePath || !existsSync(dockerfilePath)) {
+        return {
+          status: ExecutionStatus.Failed,
+          platform: request.target.platform,
+          completedSteps: [],
+          failedStep: {
+            stepId: 'validate-dockerfile',
+            stepName: 'Validate Dockerfile',
+            success: false,
+            output: '',
+            error: `Dockerfile not found: ${dockerfilePath ?? '(not specified)'}`,
+            durationMs: 0,
+          },
+        };
+      }
+    }
+
+    const source = isDocker
+      ? { localPath: mkdtempSync(join(tmpdir(), 'carburetor-src-')), metadata: { commitSha: 'local' } }
+      : await this.fetchSource(request);
 
     const artifactDir = mkdtempSync(join(tmpdir(), 'carburetor-artifacts-'));
     const pipelineResult = await this.executor.execute(pipeline, {

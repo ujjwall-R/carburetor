@@ -128,17 +128,26 @@ export class CSPAccess implements ICSPAccess {
       ];
 
       // Transfer artifact
+      process.stdout.write(`  → [Transfer artifact to EC2]\n`);
       await this.runCommand('scp', [
         ...sshOpts,
         artifact.path,
         `${sshUser}@${publicDns}:/tmp/carburetor-artifact.tar.gz`,
       ]);
+      process.stdout.write(`  ✓ Transfer artifact to EC2\n`);
 
       // Execute each Ship step on the remote host via SSH
       const shipSteps = steps.filter(s => s.type === StepType.Ship);
       for (const step of shipSteps) {
         if (step.command) {
-          await this.runCommand('ssh', [...sshOpts, `${sshUser}@${publicDns}`, step.command]);
+          process.stdout.write(`  → [${step.name}]\n`);
+          try {
+            await this.runCommand('ssh', [...sshOpts, `${sshUser}@${publicDns}`, step.command]);
+            process.stdout.write(`  ✓ ${step.name}\n`);
+          } catch (err) {
+            process.stderr.write(`  ✗ ${step.name}\n`);
+            throw err;
+          }
         }
       }
     } finally {

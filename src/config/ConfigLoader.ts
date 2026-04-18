@@ -93,16 +93,23 @@ export class ConfigLoader {
 
     if (!project) throw new Error('Config missing required section: project');
     if (!target) throw new Error('Config missing required section: target');
-    if (!vcs) throw new Error('Config missing required section: vcs');
+
+    const resolvedProjectType = project['type'] ? (String(project['type']) as ProjectType) : undefined;
+    const isDocker = resolvedProjectType === ProjectType.Docker;
+
+    if (!isDocker && !vcs) throw new Error('Config missing required section: vcs');
 
     const platform = String(target['platform'] ?? '') as CloudPlatform;
     if (!Object.values(CloudPlatform).includes(platform)) {
       throw new Error(`Invalid target.platform: "${platform}". Must be one of: ${Object.values(CloudPlatform).join(', ')}`);
     }
 
-    const provider = String(vcs['provider'] ?? '') as VCSProvider;
-    if (!Object.values(VCSProvider).includes(provider)) {
-      throw new Error(`Invalid vcs.provider: "${provider}". Must be one of: ${Object.values(VCSProvider).join(', ')}`);
+    let provider: VCSProvider | undefined;
+    if (!isDocker) {
+      provider = String(vcs!['provider'] ?? '') as VCSProvider;
+      if (!Object.values(VCSProvider).includes(provider)) {
+        throw new Error(`Invalid vcs.provider: "${provider}". Must be one of: ${Object.values(VCSProvider).join(', ')}`);
+      }
     }
 
     const build = (project['build'] as Record<string, unknown> | undefined) ?? {};
@@ -110,18 +117,21 @@ export class ConfigLoader {
     const buildScript = build['script'] as string | undefined;
     const outputDir = build['outputDir'] as string | undefined;
     const env = build['env'] as Record<string, string> | undefined;
-    const vcsRef = vcs['ref'] as string | undefined;
-    const projectType = project['type'] ? (String(project['type']) as ProjectType) : undefined;
+    const dockerfilePath = build['dockerfilePath'] as string | undefined;
+    const containerPort = build['containerPort'] as number | undefined;
+    const vcsRef = vcs?.['ref'] as string | undefined;
     const jenkins = executor?.['jenkins'] as JenkinsConfig | undefined;
     const temporal = executor?.['temporal'] as TemporalConfig | undefined;
 
     return {
       project: {
-        ...(projectType ? { type: projectType } : {}),
+        ...(resolvedProjectType ? { type: resolvedProjectType } : {}),
         build: {
           ...(buildScript ? { buildScript } : {}),
           ...(outputDir ? { outputDir } : {}),
           ...(env ? { env } : {}),
+          ...(dockerfilePath ? { dockerfilePath } : {}),
+          ...(containerPort !== undefined ? { containerPort } : {}),
         },
       },
       target: {
@@ -131,9 +141,9 @@ export class ConfigLoader {
         resourceId: String(target['resourceId'] ?? ''),
       },
       vcs: {
-        provider,
-        repoUrl: String(vcs['repoUrl'] ?? ''),
-        branch: String(vcs['branch'] ?? 'main'),
+        provider: provider ?? VCSProvider.GitHub,
+        repoUrl: String(vcs?.['repoUrl'] ?? ''),
+        branch: String(vcs?.['branch'] ?? 'main'),
         ...(vcsRef ? { ref: vcsRef } : {}),
       },
       executor: {
