@@ -1,15 +1,32 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { ProjectType, StepType } from '../models/enums.js';
-import type { Project, BuildConfig } from '../models/DeploymentRequest.js';
-import type { Pipeline, PipelineStep } from '../models/Pipeline.js';
+import { ProjectType } from '../models/enums.js';
+import type { Project } from '../models/DeploymentRequest.js';
+import type { Pipeline } from '../models/Pipeline.js';
 import type { IOrchestratingEngine } from './IOrchestratingEngine.js';
+import type { IPipelineOrchestration } from './orchestrations/IPipelineOrchestration.js';
+import { ReactAppOrchestration } from './orchestrations/ReactAppOrchestration.js';
+import { NodeServiceOrchestration } from './orchestrations/NodeServiceOrchestration.js';
+import { CustomOrchestration } from './orchestrations/CustomOrchestration.js';
 
 export class OrchestratingEngine implements IOrchestratingEngine {
-  buildPipeline(project: Project, sourceDir?: string): Pipeline {
+  buildPipeline(project: Project, sourceDir?: string, deployDir?: string): Pipeline {
     const projectType = project.type ?? (sourceDir ? this.detectProjectType(sourceDir) : ProjectType.Custom);
-    const steps = this.buildStepsForType(projectType, project.buildConfig);
+    const orchestration = this.selectOrchestration(projectType);
+    const steps = orchestration.buildSteps(project.buildConfig, deployDir);
     return { projectType, steps };
+  }
+
+  private selectOrchestration(type: ProjectType): IPipelineOrchestration {
+    switch (type) {
+      case ProjectType.ReactApp:
+        return new ReactAppOrchestration();
+      case ProjectType.NodeService:
+        return new NodeServiceOrchestration();
+      /* istanbul ignore next — Docker orchestration not yet implemented */
+      default:
+        return new CustomOrchestration();
+    }
   }
 
   private detectProjectType(sourceDir: string): ProjectType {
@@ -33,89 +50,5 @@ export class OrchestratingEngine implements IOrchestratingEngine {
     }
 
     return ProjectType.Custom;
-  }
-
-  private buildStepsForType(type: ProjectType, buildConfig: BuildConfig): PipelineStep[] {
-    if (buildConfig.buildScript) {
-      return [
-        {
-          id: 'custom-build',
-          name: 'Run custom build script',
-          type: StepType.Build,
-          command: buildConfig.buildScript,
-        },
-      ];
-    }
-
-    switch (type) {
-      case ProjectType.ReactApp:
-        return [
-          {
-            id: 'install-deps',
-            name: 'Install dependencies',
-            type: StepType.Build,
-            command: 'npm ci',
-          },
-          {
-            id: 'build-react',
-            name: 'Build React application',
-            type: StepType.Build,
-            command: 'npm run build',
-          },
-          {
-            id: 'package-artifact',
-            name: 'Package build output',
-            type: StepType.Package,
-            command: this.buildPackageCommand(buildConfig.outputDir ?? 'dist'),
-          },
-        ];
-
-      case ProjectType.NodeService:
-        return [
-          {
-            id: 'install-deps',
-            name: 'Install dependencies',
-            type: StepType.Build,
-            command: 'npm ci',
-          },
-          {
-            id: 'build-node',
-            name: 'Build Node.js service',
-            type: StepType.Build,
-            command: 'npm run build',
-          },
-          {
-            id: 'package-artifact',
-            name: 'Package build output',
-            type: StepType.Package,
-            command: this.buildPackageCommand(buildConfig.outputDir ?? 'dist', 'package.json'),
-          },
-        ];
-
-      case ProjectType.Custom:
-        return [];
-
-      /* istanbul ignore next — Docker step generation not yet implemented */
-      default:
-        return [];
-    }
-  }
-
-  /**
-   * Builds a shell command that probes for the output directory at runtime.
-   * The primary dir (from config or framework default) is tried first;
-   * common framework alternatives follow so mis-configured outputDir does not
-   * immediately hard-fail a working build.
-   */
-  private buildPackageCommand(primary: string, extra?: string): string {
-    const fallbacks = ['dist', 'build', 'out'].filter(d => d !== primary);
-    const dirs = [primary, ...fallbacks];
-    const dirList = dirs.map(d => `"${d}"`).join(' ');
-    const extraArgs = extra ? ` ${extra}` : '';
-    return (
-      `OUTPUT=; for d in ${dirList}; do [ -d "$d" ] && OUTPUT="$d" && break; done; ` +
-      `[ -n "$OUTPUT" ] && COPYFILE_DISABLE=1 tar -czf artifact.tar.gz "$OUTPUT"${extraArgs} || ` +
-      `{ echo "Build output not found (tried: ${dirs.join(', ')})" >&2; exit 1; }`
-    );
   }
 }

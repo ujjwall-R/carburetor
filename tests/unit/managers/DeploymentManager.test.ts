@@ -125,4 +125,19 @@ describe('DeploymentManager', () => {
     const pipelineArg = shippingMock.run.mock.calls[0]?.[0];
     expect(pipelineArg).toEqual(customPipeline);
   });
+
+  it('passes deployDir from cspCredentials to orchestrating.buildPipeline', async () => {
+    const request = makeDeploymentRequest({
+      cspCredentials: { accessKeyId: 'key', secretAccessKey: 'secret', deployDir: '/srv/myapp' },
+    });
+    await manager.deploy(request);
+    const deployDirArg = orchMock.buildPipeline.mock.calls[0]?.[2];
+    expect(deployDirArg).toBe('/srv/myapp');
+  });
+
+  it('uses default deployDir /var/www/html when cspCredentials has no deployDir', async () => {
+    await manager.deploy(makeDeploymentRequest());
+    const deployDirArg = orchMock.buildPipeline.mock.calls[0]?.[2];
+    expect(deployDirArg).toBe('/var/www/html');
+  });
 });

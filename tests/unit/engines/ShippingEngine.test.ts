@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { ShippingEngine } from '../../../src/engines/ShippingEngine.js';
-import { ExecutionStatus } from '../../../src/models/enums.js';
+import { ExecutionStatus, StepType } from '../../../src/models/enums.js';
 import {
   makeDeploymentRequest,
   makePipeline,
+  makePipelineStep,
   makePendingPipelineResult,
   makeFailedPipelineResult,
 } from '../../helpers/fixtures.js';
@@ -82,6 +83,14 @@ describe('ShippingEngine', () => {
       expect(result.endpoint).toBe('https://test-app.example.com');
     });
 
+    it('passes pipeline.steps to cspAccess.deploy as the fourth argument', async () => {
+      const shipStep = makePipelineStep({ id: 'ship', name: 'Deploy', type: StepType.Ship, command: 'sudo nginx -t' });
+      const pipeline = makePipeline({ steps: [makePipelineStep(), shipStep] });
+      await engine.run(pipeline, makeDeploymentRequest());
+      const stepsArg = cspMock.deploy.mock.calls[0]?.[3];
+      expect(stepsArg).toEqual(pipeline.steps);
+    });
+
     it('skips cspAccess.deploy and returns Pending when executor returns Pending', async () => {
       executorMock.execute.mockResolvedValueOnce(
         makePendingPipelineResult('https://jenkins.example.com/job/42')
@@ -116,9 +125,7 @@ describe('ShippingEngine', () => {
 
     it('calls executor.execute with sourceDir equal to the path from vcsAccess.fetchSource', async () => {
       await engine.run(makePipeline(), makeDeploymentRequest());
-      // third arg to fetchSource is destDir (the temp path created inside ShippingEngine.fetchSource)
       const destDir = vcsMock.fetchSource.mock.calls[0]?.[2];
-      // executor.execute second arg is context; context.sourceDir should equal destDir
       const context = executorMock.execute.mock.calls[0]?.[1];
       expect(context?.sourceDir).toBe(destDir);
     });

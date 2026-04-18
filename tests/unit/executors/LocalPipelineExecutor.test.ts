@@ -104,6 +104,19 @@ describe('LocalPipelineExecutor', () => {
     expect(result.completedSteps[0]?.output).toContain('hello-env');
   });
 
+  // ─── Ship step handling ───────────────────────────────────────────────────
+
+  it('skips Ship steps — they are executed remotely by CSPAccess', async () => {
+    const steps = [
+      makePipelineStep({ id: 'build', name: 'Build', type: StepType.Build, command: 'echo built' }),
+      makePipelineStep({ id: 'ship', name: 'Ship', type: StepType.Ship, command: 'exit 1' }),
+    ];
+    const result = await executor.execute(makePipeline({ steps }), makeContext());
+    expect(result.status).toBe(ExecutionStatus.Completed);
+    expect(result.completedSteps).toHaveLength(1);
+    expect(result.completedSteps[0]?.stepId).toBe('build');
+  });
+
   // ─── Artifact shape ───────────────────────────────────────────────────────
 
   it('artifact path ends with artifact.tar.gz', async () => {

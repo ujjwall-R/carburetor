@@ -29,7 +29,8 @@ export class DeploymentManager implements IDeploymentManager {
     }
 
     this.progress('Building deployment pipeline...');
-    const pipeline = this.orchestrating.buildPipeline(request.project);
+    const deployDir = String(request.cspCredentials['deployDir'] ?? '/var/www/html');
+    const pipeline = this.orchestrating.buildPipeline(request.project, undefined, deployDir);
 
     this.progress(`Running ${pipeline.steps.length} pipeline step(s) locally...`);
     const result = await this.shipping.run(pipeline, request);

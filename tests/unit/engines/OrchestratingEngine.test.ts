@@ -15,17 +15,41 @@ describe('OrchestratingEngine', () => {
   // ─── Explicit project type ────────────────────────────────────────────────
 
   describe('buildPipeline — explicit project type', () => {
-    it('ReactApp produces a 3-step pipeline', () => {
+    it('ReactApp produces a 4-step pipeline (install → build → package → ship)', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} });
       expect(pipeline.projectType).toBe(ProjectType.ReactApp);
-      expect(pipeline.steps).toHaveLength(3);
+      expect(pipeline.steps).toHaveLength(4);
     });
 
-    it('ReactApp steps are install-deps → build-react → package-artifact', () => {
+    it('ReactApp steps are install-deps → build-react → package-artifact → ship', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} });
       expect(pipeline.steps[0]?.id).toBe('install-deps');
       expect(pipeline.steps[1]?.id).toBe('build-react');
       expect(pipeline.steps[2]?.id).toBe('package-artifact');
+      expect(pipeline.steps[3]?.id).toBe('ship');
+    });
+
+    it('ReactApp ship step has StepType.Ship', () => {
+      const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} });
+      expect(pipeline.steps[3]?.type).toBe(StepType.Ship);
+    });
+
+    it('ReactApp ship step uses default deployDir /var/www/html', () => {
+      const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} });
+      expect(pipeline.steps[3]?.command).toContain('/var/www/html');
+    });
+
+    it('ReactApp ship step uses custom deployDir when provided', () => {
+      const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} }, undefined, '/srv/app');
+      expect(pipeline.steps[3]?.command).toContain('/srv/app');
+      expect(pipeline.steps[3]?.command).not.toContain('/var/www/html');
+    });
+
+    it('ReactApp ship step command includes nginx setup', () => {
+      const pipeline = engine.buildPipeline({ type: ProjectType.ReactApp, buildConfig: {} });
+      const shipCmd = pipeline.steps[3]?.command ?? '';
+      expect(shipCmd).toContain('nginx');
+      expect(shipCmd).toContain('systemctl');
     });
 
     it('ReactApp package step uses default output dir "dist"', () => {
@@ -33,22 +57,21 @@ describe('OrchestratingEngine', () => {
       expect(pipeline.steps[2]?.command).toContain('dist');
     });
 
-    it('NodeService produces a 3-step pipeline', () => {
+    it('NodeService produces a 3-step pipeline with no Ship step', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.NodeService, buildConfig: {} });
       expect(pipeline.projectType).toBe(ProjectType.NodeService);
       expect(pipeline.steps).toHaveLength(3);
+      expect(pipeline.steps.every(s => s.type !== StepType.Ship)).toBe(true);
     });
 
     it('NodeService uses custom outputDir as the primary candidate in package step', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.NodeService, buildConfig: { outputDir: 'build' } });
       const packageStep = pipeline.steps[2];
-      // configured dir must appear first in the probe loop
       expect(packageStep?.command).toMatch(/for d in "build"/);
-      // common fallbacks are still included so a mis-configured outputDir doesn't hard-fail a working build
       expect(packageStep?.command).toContain('"dist"');
     });
 
-    it('Custom type produces an empty pipeline', () => {
+    it('Custom type produces an empty pipeline with no Ship step', () => {
       const pipeline = engine.buildPipeline({ type: ProjectType.Custom, buildConfig: {} });
       expect(pipeline.projectType).toBe(ProjectType.Custom);
       expect(pipeline.steps).toHaveLength(0);
@@ -64,12 +87,13 @@ describe('OrchestratingEngine', () => {
       expect(pipeline.steps[0]?.type).toBe(StepType.Build);
     });
 
-    it('buildScript takes priority over ReactApp type — only 1 step emitted', () => {
+    it('buildScript takes priority over ReactApp type — only 1 step emitted, no Ship step', () => {
       const pipeline = engine.buildPipeline({
         type: ProjectType.ReactApp,
         buildConfig: { buildScript: './ci/build.sh' },
       });
       expect(pipeline.steps).toHaveLength(1);
+      expect(pipeline.steps.every(s => s.type !== StepType.Ship)).toBe(true);
     });
 
     // known gap: Docker step generation not yet implemented
@@ -134,7 +158,6 @@ describe('OrchestratingEngine', () => {
     });
 
     it('falls back to Custom when no recognisable project files are present', () => {
-      // tmpDir is empty — no Dockerfile, no package.json
       const pipeline = engine.buildPipeline({ buildConfig: {} }, tmpDir);
       expect(pipeline.projectType).toBe(ProjectType.Custom);
       expect(pipeline.steps).toHaveLength(0);

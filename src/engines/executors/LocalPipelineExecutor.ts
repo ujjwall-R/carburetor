@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
 import { join } from 'path';
-import { ExecutionStatus, ProjectType } from '../../models/enums.js';
+import { ExecutionStatus, ProjectType, StepType } from '../../models/enums.js';
 import type { Pipeline, ExecutionContext, PipelineResult, StepResult, PipelineStep } from '../../models/Pipeline.js';
 import type { DeployableArtifact } from '../../models/DeployableArtifact.js';
 import type { IPipelineExecutor } from './IPipelineExecutor.js';
@@ -12,7 +12,10 @@ export class LocalPipelineExecutor implements IPipelineExecutor {
 
     const completedSteps: StepResult[] = [];
 
-    for (const step of pipeline.steps) {
+    // Ship steps run on the remote host via CSPAccess — skip them here.
+    const localSteps = pipeline.steps.filter(s => s.type !== StepType.Ship);
+
+    for (const step of localSteps) {
       const stepLabel = step.command ? `[${step.name}] $ ${step.command}` : `[${step.name}]`;
       process.stdout.write(`  → ${stepLabel}\n`);
 
@@ -37,7 +40,7 @@ export class LocalPipelineExecutor implements IPipelineExecutor {
     const artifact: DeployableArtifact = {
       path: join(context.sourceDir, 'artifact.tar.gz'),
       type: pipeline.projectType,
-      buildMetadata: { executor: 'local', steps: String(pipeline.steps.length) },
+      buildMetadata: { executor: 'local', steps: String(localSteps.length) },
       builtAt: new Date().toISOString(),
     };
 

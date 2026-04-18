@@ -70,7 +70,8 @@ export class ShippingEngine implements IShippingEngine {
     const deployResult = await this.cspAccess.deploy(
       pipelineResult.artifact,
       request.target,
-      request.cspCredentials
+      request.cspCredentials,
+      pipeline.steps
     );
 
     return {
