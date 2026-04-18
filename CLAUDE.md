@@ -82,6 +82,8 @@ Four layers, each answering a distinct question:
 - N/A — stateless refactor (ujjwal/baseSetup)
 - TypeScript 5.5 (strict mode) + `commander` (existing), `@clack/prompts` ^1.0.0 (new — zero transitive deps after leaves, Bun compile compatible, pin Bun ≥ 1.3.3) (ujjwal/baseSetup)
 - N/A — wizard session is in-memory only; no persistence (ujjwal/baseSetup)
+- TypeScript 5.5 (strict mode) + `bun:test` (existing), `fast-xml-parser` ^4.3.0 (new — XML parsing), `js-yaml` (existing — YAML; unchanged) (ujjwal/baseSetup)
+- N/A — stateless per invocation; test fixtures are static files on disk (ujjwal/baseSetup)
 
 ## Recent Changes
 - 001-deployment-cli: Added TypeScript 5.x (strict mode) + `commander` (CLI parsing), cloud SDKs (aws-sdk v3, @google-cloud/*, @azure/*)

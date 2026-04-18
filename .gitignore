@@ -5,6 +5,7 @@ carburetor
 .env
 .env.*
 !.env.example
+!tests/fixtures/.env.test
 .DS_Store
 *.tmp
 *.swp
