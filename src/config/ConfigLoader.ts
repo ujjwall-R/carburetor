@@ -119,6 +119,8 @@ export class ConfigLoader {
     const env = build['env'] as Record<string, string> | undefined;
     const dockerfilePath = build['dockerfilePath'] as string | undefined;
     const containerPort = build['containerPort'] as number | undefined;
+    const domain = build['domain'] as string | undefined;
+    const sslEmail = build['sslEmail'] as string | undefined;
     const vcsRef = vcs?.['ref'] as string | undefined;
     const jenkins = executor?.['jenkins'] as JenkinsConfig | undefined;
     const temporal = executor?.['temporal'] as TemporalConfig | undefined;
@@ -132,6 +134,8 @@ export class ConfigLoader {
           ...(env ? { env } : {}),
           ...(dockerfilePath ? { dockerfilePath } : {}),
           ...(containerPort !== undefined ? { containerPort } : {}),
+          ...(domain ? { domain } : {}),
+          ...(sslEmail ? { sslEmail } : {}),
         },
       },
       target: {

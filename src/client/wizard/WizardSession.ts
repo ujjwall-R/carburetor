@@ -1,5 +1,6 @@
 import * as clack from '@clack/prompts';
 import { isCancel } from '@clack/prompts';
+import { existsSync } from 'fs';
 import type { DeploymentRequest, VCSCredentials, CSPCredentials } from '../../models/DeploymentRequest.js';
 import { ProjectType, VCSProvider, CloudPlatform } from '../../models/enums.js';
 import {
@@ -22,6 +23,12 @@ export class WizardSession {
       options: PROJECT_TYPE_OPTIONS as unknown as Array<{ value: string; label: string }>,
     });
     this.assertNotCancel(projectType);
+
+    // ── Docker single-container path ───────────────────────────────────────
+    if (projectType === ProjectType.Docker) {
+      return this.runDockerWizard(dryRun, verbose);
+    }
+
     if (projectType === ProjectType.Custom) {
       clack.note('Note: "Other" projects use a generic build configuration. This mode is experimental.');
     }
@@ -106,16 +113,12 @@ export class WizardSession {
       );
     }
 
-    // ── Steps 15–16: SSH user + deploy dir ─────────────────────────────────
+    // ── Step 15: SSH user ──────────────────────────────────────────────────
     const sshUser = await this.promptWithRetry(() =>
       clack.text({ message: 'SSH username on EC2 instance (e.g. ec2-user, ubuntu)', validate: required })
     );
 
-    const deployDir = await this.promptWithRetry(() =>
-      clack.text({ message: 'Deployment directory on EC2 (e.g. /var/www/app)', validate: required })
-    );
-
-    // ── Step 17: Confirmation summary ──────────────────────────────────────
+    // ── Step 16: Confirmation summary ─────────────────────────────────────
     clack.note(
       [
         `Project type : ${String(projectType)}`,
@@ -126,7 +129,6 @@ export class WizardSession {
         `Environment  : ${environment}`,
         `Instance ID  : ${resourceId}`,
         `SSH user     : ${sshUser}`,
-        `Deploy dir   : ${deployDir}`,
         sshKeyPath ? `SSH key file : ${sshKeyPath}` : 'SSH key      : (inline — hidden)',
       ].join('\n'),
       'Deployment Summary'
@@ -147,7 +149,6 @@ export class WizardSession {
       accessKeyId: awsAccessKeyId,
       secretAccessKey: awsSecretKey,
       sshUser,
-      deployDir,
       ...(sshKey      ? { sshKey }     : {}),
       ...(sshKeyPath  ? { sshKeyPath } : {}),
     };
@@ -166,6 +167,163 @@ export class WizardSession {
         branch,
       },
       vcsCredentials,
+      cspCredentials,
+      dryRun,
+      verbose,
+    };
+  }
+
+  // ── Docker wizard ──────────────────────────────────────────────────────────
+
+  private async runDockerWizard(dryRun: boolean, verbose: boolean): Promise<DeploymentRequest> {
+    // ── Dockerfile path ────────────────────────────────────────────────────
+    const dockerfilePath = await this.promptWithRetry(() =>
+      clack.text({
+        message: 'Dockerfile path (e.g. ./Dockerfile)',
+        validate: (v) => {
+          if (!v || v.trim().length === 0) return 'This field is required.';
+          if (!existsSync(v.trim())) return `Dockerfile not found: ${v.trim()}`;
+          return undefined;
+        },
+      })
+    );
+
+    // ── Cloud platform + service type ──────────────────────────────────────
+    const platform = await clack.select({
+      message: 'Cloud platform',
+      options: CLOUD_PLATFORM_OPTIONS as unknown as Array<{ value: string; label: string }>,
+    });
+    this.assertNotCancel(platform);
+
+    const serviceType = await clack.select({
+      message: 'Service type',
+      options: AWS_SERVICE_OPTIONS as unknown as Array<{ value: string; label: string }>,
+    });
+    this.assertNotCancel(serviceType);
+
+    // ── Target details ─────────────────────────────────────────────────────
+    const region = await this.promptWithRetry(() =>
+      clack.text({ message: 'AWS region (e.g. us-east-1)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    const environment = await this.promptWithRetry(() =>
+      clack.text({ message: 'Environment name (e.g. production, staging)', defaultValue: 'production', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    const resourceId = await this.promptWithRetry(() =>
+      clack.text({ message: 'EC2 Instance ID (e.g. i-0abc123def456)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    // ── AWS credentials ────────────────────────────────────────────────────
+    const awsAccessKeyId = await this.promptWithRetry(() =>
+      clack.password({ message: 'AWS_ACCESS_KEY_ID', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    const awsSecretKey = await this.promptWithRetry(() =>
+      clack.password({ message: 'AWS_SECRET_ACCESS_KEY', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    // ── SSH key ────────────────────────────────────────────────────────────
+    const sshKeyMode = await clack.select({
+      message: 'How do you want to provide the EC2 SSH key?',
+      options: [
+        { value: 'inline', label: 'Paste inline' },
+        { value: 'path',   label: 'Path to key file' },
+      ],
+    });
+    this.assertNotCancel(sshKeyMode);
+
+    let sshKey: string | undefined;
+    let sshKeyPath: string | undefined;
+
+    if (sshKeyMode === 'inline') {
+      sshKey = await this.promptWithRetry(() =>
+        clack.password({ message: 'Paste your SSH private key', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+    } else {
+      sshKeyPath = await this.promptWithRetry(() =>
+        clack.text({ message: 'Path to SSH private key file (e.g. ~/.ssh/id_rsa)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+    }
+
+    // ── SSH user ───────────────────────────────────────────────────────────
+    const sshUser = await this.promptWithRetry(() =>
+      clack.text({ message: 'SSH username on EC2 instance (e.g. ec2-user, ubuntu)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+    );
+
+    // ── SSL ────────────────────────────────────────────────────────────────
+    const enableSsl = await clack.confirm({ message: 'Enable SSL? (requires a domain pointing to this instance)', initialValue: false });
+    if (isCancel(enableSsl)) {
+      clack.cancel('Wizard cancelled.');
+      process.exit(1);
+    }
+
+    let domain: string | undefined;
+    let sslEmail: string | undefined;
+
+    if (enableSsl) {
+      domain = await this.promptWithRetry(() =>
+        clack.text({ message: 'Domain name (e.g. example.com)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+      sslEmail = await this.promptWithRetry(() =>
+        clack.text({ message: 'SSL contact email (used by Let\'s Encrypt)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+    }
+
+    // ── Confirmation summary ───────────────────────────────────────────────
+    clack.note(
+      [
+        `Project type : docker`,
+        `Dockerfile   : ${dockerfilePath}`,
+        `Cloud        : ${String(platform)} — ${String(serviceType)}`,
+        `Region       : ${region}`,
+        `Environment  : ${environment}`,
+        `Instance ID  : ${resourceId}`,
+        `SSH user     : ${sshUser}`,
+        sshKeyPath ? `SSH key file : ${sshKeyPath}` : 'SSH key      : (inline — hidden)',
+        `Port         : 80 (fixed)`,
+        enableSsl ? `SSL          : enabled (domain: ${domain}, email: ${sslEmail})` : 'SSL          : disabled',
+      ].join('\n'),
+      'Deployment Summary'
+    );
+
+    const confirmed = await clack.confirm({ message: 'Proceed with deployment?' });
+    if (isCancel(confirmed) || !confirmed) {
+      clack.cancel('Deployment cancelled.');
+      process.exit(1);
+    }
+
+    clack.outro('Starting deployment…');
+
+    const cspCredentials: CSPCredentials = {
+      accessKeyId: awsAccessKeyId,
+      secretAccessKey: awsSecretKey,
+      sshUser,
+      ...(sshKey     ? { sshKey }     : {}),
+      ...(sshKeyPath ? { sshKeyPath } : {}),
+    };
+
+    return {
+      project: {
+        type: ProjectType.Docker,
+        buildConfig: {
+          dockerfilePath,
+          ...(domain   ? { domain }   : {}),
+          ...(sslEmail ? { sslEmail } : {}),
+        },
+      },
+      target: {
+        platform: platform as CloudPlatform,
+        region,
+        environment,
+        resourceId,
+      },
+      vcsConfig: {
+        provider: VCSProvider.GitHub,
+        repoUrl: '',
+        branch: 'main',
+      },
+      vcsCredentials: { token: '' },
       cspCredentials,
       dryRun,
       verbose,

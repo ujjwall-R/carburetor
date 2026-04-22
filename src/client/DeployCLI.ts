@@ -162,6 +162,8 @@ export class DeployCLI {
         buildConfig: {
           dockerfilePath,
           ...(config.project.build.env ? { env: config.project.build.env } : {}),
+          ...(config.project.build.domain ? { domain: config.project.build.domain } : {}),
+          ...(config.project.build.sslEmail ? { sslEmail: config.project.build.sslEmail } : {}),
         },
       },
       target: config.target,

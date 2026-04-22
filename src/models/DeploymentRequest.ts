@@ -6,6 +6,8 @@ export interface BuildConfig {
   env?: Record<string, string>;
   dockerfilePath?: string;
   containerPort?: number;
+  domain?: string;
+  sslEmail?: string;
 }
 
 export interface Project {

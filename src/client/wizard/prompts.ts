@@ -2,6 +2,7 @@ import { ProjectType, VCSProvider, CloudPlatform } from '../../models/enums.js';
 
 export const PROJECT_TYPE_OPTIONS = [
   { value: ProjectType.ReactApp, label: 'React App' },
+  { value: ProjectType.Docker,   label: 'Docker Container' },
   { value: ProjectType.Custom,   label: 'Other (experimental)' },
 ] as const;
 
