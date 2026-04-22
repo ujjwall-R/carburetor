@@ -251,6 +251,25 @@ export class WizardSession {
       clack.text({ message: 'SSH username on EC2 instance (e.g. ec2-user, ubuntu)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
     );
 
+    // ── SSL ────────────────────────────────────────────────────────────────
+    const enableSsl = await clack.confirm({ message: 'Enable SSL? (requires a domain pointing to this instance)', initialValue: false });
+    if (isCancel(enableSsl)) {
+      clack.cancel('Wizard cancelled.');
+      process.exit(1);
+    }
+
+    let domain: string | undefined;
+    let sslEmail: string | undefined;
+
+    if (enableSsl) {
+      domain = await this.promptWithRetry(() =>
+        clack.text({ message: 'Domain name (e.g. example.com)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+      sslEmail = await this.promptWithRetry(() =>
+        clack.text({ message: 'SSL contact email (used by Let\'s Encrypt)', validate: (v) => (!v || !v.trim() ? 'This field is required.' : undefined) })
+      );
+    }
+
     // ── Confirmation summary ───────────────────────────────────────────────
     clack.note(
       [
@@ -263,6 +282,7 @@ export class WizardSession {
         `SSH user     : ${sshUser}`,
         sshKeyPath ? `SSH key file : ${sshKeyPath}` : 'SSH key      : (inline — hidden)',
         `Port         : 80 (fixed)`,
+        enableSsl ? `SSL          : enabled (domain: ${domain}, email: ${sslEmail})` : 'SSL          : disabled',
       ].join('\n'),
       'Deployment Summary'
     );
@@ -284,7 +304,14 @@ export class WizardSession {
     };
 
     return {
-      project: { type: ProjectType.Docker, buildConfig: { dockerfilePath } },
+      project: {
+        type: ProjectType.Docker,
+        buildConfig: {
+          dockerfilePath,
+          ...(domain   ? { domain }   : {}),
+          ...(sslEmail ? { sslEmail } : {}),
+        },
+      },
       target: {
         platform: platform as CloudPlatform,
         region,

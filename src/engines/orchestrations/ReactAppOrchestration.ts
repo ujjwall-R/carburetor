@@ -21,7 +21,7 @@ export class ReactAppOrchestration extends BasePipelineOrchestration {
         id: 'install-deps',
         name: 'Install dependencies',
         type: StepType.Build,
-        command: 'npm ci',
+        command: 'npm ci --include=dev',
       },
       {
         id: 'build-react',

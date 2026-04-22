@@ -218,43 +218,38 @@ describe('WizardSession', () => {
     let dockerSelectIdx: number;
     let dockerTextIdx: number;
     let dockerPasswordIdx: number;
+    let dockerConfirmIdx: number;
 
-    beforeEach(() => {
+    const setupDockerMocks = (
+      selectValues: unknown[],
+      textValues: string[],
+      passwordValues: string[],
+      confirmValues: boolean[]
+    ) => {
       dockerSelectIdx = 0;
       dockerTextIdx = 0;
       dockerPasswordIdx = 0;
+      dockerConfirmIdx = 0;
 
       mockClack.select.mockClear();
       mockClack.text.mockClear();
       mockClack.password.mockClear();
       mockClack.confirm.mockClear();
 
-      // Docker path: project type, platform, service type, SSH key mode
-      const dockerSelectValues = [
-        ProjectType.Docker,
-        CloudPlatform.AWS,
-        'ec2',
-        'path', // SSH key mode
-      ];
-      // Dockerfile path, region, environment, instance ID, SSH key path, SSH user
-      const dockerTextValues = [
-        './Dockerfile',
-        'us-east-1',
-        'production',
-        'i-0abc123def456',
-        '~/.ssh/id_rsa',  // SSH key path (prompted before SSH user in path mode)
-        'ec2-user',
-      ];
-      // AWS access key, secret key
-      const dockerPasswordValues = [
-        'AKIAIOSFODNN7EXAMPLE',
-        'wJalrXUtnFEMI/K7MDENG',
-      ];
+      mockClack.select.mockImplementation(async () => selectValues[dockerSelectIdx++] ?? '');
+      mockClack.text.mockImplementation(async () => textValues[dockerTextIdx++] ?? '');
+      mockClack.password.mockImplementation(async () => passwordValues[dockerPasswordIdx++] ?? '');
+      mockClack.confirm.mockImplementation(async () => confirmValues[dockerConfirmIdx++] ?? true);
+    };
 
-      mockClack.select.mockImplementation(async () => dockerSelectValues[dockerSelectIdx++] ?? '');
-      mockClack.text.mockImplementation(async () => dockerTextValues[dockerTextIdx++] ?? '');
-      mockClack.password.mockImplementation(async () => dockerPasswordValues[dockerPasswordIdx++] ?? '');
-      mockClack.confirm.mockImplementation(async () => true);
+    beforeEach(() => {
+      // Default: SSL disabled (false), proceed (true)
+      setupDockerMocks(
+        [ProjectType.Docker, CloudPlatform.AWS, 'ec2', 'path'],
+        ['./Dockerfile', 'us-east-1', 'production', 'i-0abc123def456', '~/.ssh/id_rsa', 'ec2-user'],
+        ['AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG'],
+        [false, true]  // SSL=no, confirm=yes
+      );
     });
 
     it('sets project.type to Docker', async () => {
@@ -294,6 +289,59 @@ describe('WizardSession', () => {
       const session = new WizardSession();
       const request = await session.run(false, false);
       expect(request.cspCredentials['deployDir']).toBeUndefined();
+    });
+
+    // ── SSL disabled (default) ───────────────────────────────────────────
+
+    it('does not set domain or sslEmail when SSL is disabled', async () => {
+      const session = new WizardSession();
+      const request = await session.run(false, false);
+      expect(request.project.buildConfig.domain).toBeUndefined();
+      expect(request.project.buildConfig.sslEmail).toBeUndefined();
+    });
+
+    // ── SSL enabled ──────────────────────────────────────────────────────
+
+    it('sets domain and sslEmail in buildConfig when SSL is enabled', async () => {
+      setupDockerMocks(
+        [ProjectType.Docker, CloudPlatform.AWS, 'ec2', 'path'],
+        ['./Dockerfile', 'us-east-1', 'production', 'i-0abc123def456', '~/.ssh/id_rsa', 'ec2-user', 'example.com', 'admin@example.com'],
+        ['AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG'],
+        [true, true]  // SSL=yes, confirm=yes
+      );
+
+      const session = new WizardSession();
+      const request = await session.run(false, false);
+      expect(request.project.buildConfig.domain).toBe('example.com');
+      expect(request.project.buildConfig.sslEmail).toBe('admin@example.com');
+    });
+
+    it('includes dockerfilePath alongside domain and sslEmail when SSL is enabled', async () => {
+      setupDockerMocks(
+        [ProjectType.Docker, CloudPlatform.AWS, 'ec2', 'path'],
+        ['./Dockerfile', 'us-east-1', 'production', 'i-0abc123def456', '~/.ssh/id_rsa', 'ec2-user', 'myapp.io', 'ssl@myapp.io'],
+        ['AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG'],
+        [true, true]
+      );
+
+      const session = new WizardSession();
+      const request = await session.run(false, false);
+      expect(request.project.buildConfig.dockerfilePath).toBe('./Dockerfile');
+      expect(request.project.buildConfig.domain).toBe('myapp.io');
+      expect(request.project.buildConfig.sslEmail).toBe('ssl@myapp.io');
+    });
+
+    it('exits when SSL confirm is cancelled', async () => {
+      setupDockerMocks(
+        [ProjectType.Docker, CloudPlatform.AWS, 'ec2', 'path'],
+        ['./Dockerfile', 'us-east-1', 'production', 'i-0abc123def456', '~/.ssh/id_rsa', 'ec2-user'],
+        ['AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG'],
+        [false, false]  // SSL=no, but decline final confirmation
+      );
+
+      const session = new WizardSession();
+      await session.run(false, false).catch(() => {});
+      expect(exitSpy).toHaveBeenCalledWith(1);
     });
   });
 });

@@ -33,11 +33,22 @@ export class DockerOrchestration extends BasePipelineOrchestration {
         type: StepType.Ship,
         command: `sudo systemctl stop nginx 2>/dev/null || true && sudo docker rm -f carburetor-app 2>/dev/null || true`,
       },
+      ...(buildConfig.domain && buildConfig.sslEmail ? [{
+        id: 'certbot-install',
+        name: 'Install Certbot',
+        type: StepType.Ship,
+        command: `command -v certbot >/dev/null 2>&1 || (sudo yum install -y python3-pip 2>/dev/null || sudo apt-get install -y python3-pip 2>/dev/null; sudo pip3 install certbot 2>/dev/null; true)`,
+      }, {
+        id: 'certbot-run',
+        name: 'Obtain SSL certificate',
+        type: StepType.Ship,
+        command: `sudo test -f /etc/letsencrypt/live/${buildConfig.domain}/fullchain.pem || sudo certbot certonly --standalone -d ${buildConfig.domain} --non-interactive --agree-tos -m ${buildConfig.sslEmail}`,
+      }] : []),
       {
         id: 'docker-run',
         name: 'Start container',
         type: StepType.Ship,
-        command: `sudo docker run -d --restart unless-stopped -p 80:80 --name carburetor-app carburetor-docker-image`,
+        command: `sudo docker run -d --restart unless-stopped -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro --name carburetor-app carburetor-docker-image`,
       },
     ];
   }
