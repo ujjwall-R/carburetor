@@ -32,7 +32,7 @@ executor:
 # ── Docker EC2 deploy example ─────────────────────────────────────────────────
 # Use this config (with no vcs section) to deploy a single Docker image to EC2.
 # Required env vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
-#   CARBORATOR_EC2_SSH_KEY or CARBORATOR_EC2_SSH_KEY_PATH, CARBORATOR_EC2_SSH_USER
+#   carburetor_EC2_SSH_KEY or carburetor_EC2_SSH_KEY_PATH, carburetor_EC2_SSH_USER
 #
 # Run:   carburetor deploy --dockerfile ./Dockerfile --port 3000
 # Or:    carburetor deploy   (when dockerfilePath is set in this file)

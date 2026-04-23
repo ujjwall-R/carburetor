@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "carborator",
+      "name": "carburetor",
       "dependencies": {
         "@aws-sdk/client-ec2": "^3.1029.0",
         "@aws-sdk/client-elastic-beanstalk": "^3.600.0",

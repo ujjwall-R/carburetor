@@ -7,7 +7,7 @@ No new data models or entities are introduced. The test uses existing types unch
 
 ## Entities Used (from existing codebase)
 
-- **`CarboratorConfig`** — produced by `ConfigLoader.load('carburetor.yml')`
+- **`carburetorConfig`** — produced by `ConfigLoader.load('carburetor.yml')`
 - **`DeploymentRequest`** — assembled from config + resolved credentials; passed to `DeploymentManager.deploy()`
 - **`DeploymentOutcome`** — returned by `manager.deploy()`; test asserts `outcome.status === Completed`
 
@@ -15,7 +15,7 @@ No new data models or entities are introduced. The test uses existing types unch
 
 ```
 carburetor.yml
-  └─► ConfigLoader.load()  →  CarboratorConfig
+  └─► ConfigLoader.load()  →  carburetorConfig
         └─► resolveVCSCredentials()  →  VCSCredentials   (from process.env via .env)
         └─► resolveCSPCredentials()  →  CSPCredentials   (from process.env via .env)
               └─► DeploymentManager.deploy(request)

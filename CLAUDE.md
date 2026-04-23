@@ -1,4 +1,4 @@
-# Carborator
+# carburetor
 
 ## Tech Stack
 

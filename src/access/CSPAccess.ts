@@ -101,7 +101,7 @@ export class CSPAccess implements ICSPAccess {
     if (!sshKey && !sshKeyPath) {
       throw new Error(
         'EC2 deployment requires an SSH key.\n' +
-        '  Set CARBORATOR_EC2_SSH_KEY (PEM content) or CARBORATOR_EC2_SSH_KEY_PATH (path to PEM file).'
+        '  Set carburetor_EC2_SSH_KEY (PEM content) or carburetor_EC2_SSH_KEY_PATH (path to PEM file).'
       );
     }
 

@@ -100,4 +100,4 @@
 - No engine, access layer, model, or CLI flag changes — all work is in `WizardSession.ts`, `prompts.ts`, and `WizardSession.test.ts`
 - The `--dockerfile` CLI flag path (via `carburetor.yml`) is unchanged
 - Port 80 is fixed; `DockerOrchestration.ts` is not modified
-- `deployDir` removed from wizard only; `CARBORATOR_EC2_DEPLOY_DIR` env var path remains available for non-wizard users
+- `deployDir` removed from wizard only; `carburetor_EC2_DEPLOY_DIR` env var path remains available for non-wizard users

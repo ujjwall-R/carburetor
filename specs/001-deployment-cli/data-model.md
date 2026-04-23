@@ -291,7 +291,7 @@ Credentials are **never** stored in `carburetor.yml`. They are sourced from envi
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` |
 | GCP | `GOOGLE_APPLICATION_CREDENTIALS` (path to key file) |
 | Azure | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` |
-| GitHub | `CARBORATOR_VCS_TOKEN` |
+| GitHub | `carburetor_VCS_TOKEN` |
 
 ---
 

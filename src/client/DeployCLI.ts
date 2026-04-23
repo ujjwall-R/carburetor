@@ -5,7 +5,7 @@ import { ExecutionStatus, ProjectType, VCSProvider } from '../models/enums.js';
 import type { IDeploymentManager } from '../managers/IDeploymentManager.js';
 import type { DeploymentOutcome } from '../models/DeploymentOutcome.js';
 import type { DeploymentRequest } from '../models/DeploymentRequest.js';
-import type { CarboratorConfig, ConfigLoader } from '../config/ConfigLoader.js';
+import type { carburetorConfig, ConfigLoader } from '../config/ConfigLoader.js';
 
 interface CLIArgs {
   config: string;
@@ -91,7 +91,7 @@ export class DeployCLI {
     }
 
     // File-based path
-    let config: CarboratorConfig;
+    let config: carburetorConfig;
     try {
       config = this.configLoader.load(args.config);
     } catch (err) {
@@ -136,7 +136,7 @@ export class DeployCLI {
   private async runDockerDeploy(args: CLIArgs): Promise<void> {
     const dockerfilePath = resolve(args.dockerfile!);
 
-    let config: CarboratorConfig;
+    let config: carburetorConfig;
     try {
       config = this.configLoader.load(args.config);
     } catch (err) {
@@ -196,7 +196,7 @@ export class DeployCLI {
   }
 
   private async runValidate(configPath: string): Promise<void> {
-    let config: CarboratorConfig;
+    let config: carburetorConfig;
     try {
       config = this.configLoader.load(configPath);
     } catch (err) {

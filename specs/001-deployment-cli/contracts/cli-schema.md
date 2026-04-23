@@ -75,7 +75,7 @@ carburetor version
 ### Human-readable (default TTY mode)
 
 ```
-Carborator v1.0.0
+carburetor v1.0.0
 
 [1/5] Validating credentials...           ✓  (0.3s)
 [2/5] Fetching source from GitHub...      ✓  (4.1s)
@@ -95,7 +95,7 @@ On failure:
 [2/5] Fetching source from GitHub...      ✗  Failed
 
 Error: Repository not found or access denied
-  → Check that CARBORATOR_VCS_TOKEN is set and has 'repo' scope
+  → Check that carburetor_VCS_TOKEN is set and has 'repo' scope
   → Repo: https://github.com/org/repo
 
 Exit code: 1
@@ -150,7 +150,7 @@ vcs:
 
 | Platform | Variable | Description |
 |----------|----------|-------------|
-| All VCS | `CARBORATOR_VCS_TOKEN` | Personal access token |
+| All VCS | `carburetor_VCS_TOKEN` | Personal access token |
 | AWS | `AWS_ACCESS_KEY_ID` | AWS access key |
 | AWS | `AWS_SECRET_ACCESS_KEY` | AWS secret |
 | AWS | `AWS_SESSION_TOKEN` | Optional session token |

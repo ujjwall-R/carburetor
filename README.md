@@ -1,6 +1,6 @@
 # carburetor
 
-Deploy applications to cloud platforms with a single command. Carborator handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
+Deploy applications to cloud platforms with a single command. carburetor handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
 
 ```
 carburetor deploy
@@ -155,7 +155,7 @@ executor:
 ### GitHub / GitLab
 
 ```bash
-export CARBORATOR_VCS_TOKEN=ghp_your_token_here
+export carburetor_VCS_TOKEN=ghp_your_token_here
 ```
 
 ### AWS
@@ -215,11 +215,11 @@ carburetor deploy --interactive
 # Interactive wizard + dry-run (validate credentials without deploying)
 carburetor deploy --interactive --dry-run
 
-# Interactive wizard — no carborator.yml needed
-carborator deploy --interactive
+# Interactive wizard — no carburetor.yml needed
+carburetor deploy --interactive
 
 # Interactive wizard + dry-run (validate credentials without deploying)
-carborator deploy --interactive --dry-run
+carburetor deploy --interactive --dry-run
 
 # Override platform at runtime
 carburetor deploy --target lambda
@@ -287,8 +287,8 @@ target:
 ```bash
 export AWS_ACCESS_KEY_ID=AKIA...
 export AWS_SECRET_ACCESS_KEY=...
-export CARBORATOR_EC2_SSH_KEY_PATH=/path/to/your-key.pem
-export CARBORATOR_EC2_SSH_USER=ec2-user       # default; omit if using ec2-user
+export carburetor_EC2_SSH_KEY_PATH=/path/to/your-key.pem
+export carburetor_EC2_SSH_USER=ec2-user       # default; omit if using ec2-user
 ```
 
 #### 4. Deploy

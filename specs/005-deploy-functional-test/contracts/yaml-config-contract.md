@@ -31,9 +31,9 @@ Required variables depend on `target.platform` in `carburetor.yml`:
 
 | Variable | Required for |
 |----------|-------------|
-| `CARBORATOR_VCS_TOKEN` | All platforms |
+| `carburetor_VCS_TOKEN` | All platforms |
 | `AWS_ACCESS_KEY_ID` | aws, lambda |
 | `AWS_SECRET_ACCESS_KEY` | aws, lambda |
-| `CARBORATOR_EC2_SSH_KEY` or `CARBORATOR_EC2_SSH_KEY_PATH` | EC2 targets |
+| `carburetor_EC2_SSH_KEY` or `carburetor_EC2_SSH_KEY_PATH` | EC2 targets |
 | `GOOGLE_APPLICATION_CREDENTIALS` | gcp |
 | `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET` + `AZURE_TENANT_ID` + `AZURE_SUBSCRIPTION_ID` | azure |
