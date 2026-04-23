@@ -46,11 +46,11 @@ build() {
   fi
 }
 
-build bun-darwin-arm64  macos-arm64  carburetor      true
-build bun-darwin-x64    macos-x64    carburetor      true
-build bun-linux-arm64   linux-arm64  carburetor      false
-build bun-linux-x64     linux-x64    carburetor      false
-build bun-windows-x64   windows-x64  carburetor.exe  false
+build bun-darwin-arm64  macos-arm64  carburetor-macos-arm64  true
+build bun-darwin-x64    macos-x64    carburetor-macos-x64    true
+build bun-linux-arm64   linux-arm64  carburetor-linux-arm64  false
+build bun-linux-x64     linux-x64    carburetor-linux-x64    false
+build bun-windows-x64   windows-x64  carburetor.exe          false
 
 echo ""
 echo "Binaries written to dist/:"
