@@ -53,7 +53,7 @@ vcs:
 ## Set credentials
 
 ```bash
-export CARBORATOR_VCS_TOKEN=ghp_xxxx
+export carburetor_VCS_TOKEN=ghp_xxxx
 export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```

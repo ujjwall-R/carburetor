@@ -7,7 +7,7 @@ import type { JenkinsConfig, TemporalConfig } from '../models/ExecutorConfig.js'
 
 export type ExecutorType = 'local' | 'jenkins' | 'temporal';
 
-export interface CarboratorConfig {
+export interface carburetorConfig {
   project: {
     type?: ProjectType;
     build: BuildConfig;
@@ -22,7 +22,7 @@ export interface CarboratorConfig {
 }
 
 export class ConfigLoader {
-  load(configPath: string): CarboratorConfig {
+  load(configPath: string): carburetorConfig {
     const absPath = resolve(configPath);
     if (!existsSync(absPath)) {
       throw new Error(`Config file not found: ${absPath}`);
@@ -35,9 +35,9 @@ export class ConfigLoader {
   }
 
   resolveVCSCredentials(): VCSCredentials {
-    const token = process.env['CARBORATOR_VCS_TOKEN'];
+    const token = process.env['carburetor_VCS_TOKEN'];
     if (!token) {
-      throw new Error('Missing required env var: CARBORATOR_VCS_TOKEN');
+      throw new Error('Missing required env var: carburetor_VCS_TOKEN');
     }
     return { token };
   }
@@ -55,10 +55,10 @@ export class ConfigLoader {
         const sessionToken = process.env['AWS_SESSION_TOKEN'];
         if (sessionToken) creds['sessionToken'] = sessionToken;
         // EC2 SSH credentials (only required when deploying to an EC2 instance)
-        const sshKey = process.env['CARBORATOR_EC2_SSH_KEY'];
-        const sshKeyPath = process.env['CARBORATOR_EC2_SSH_KEY_PATH'];
-        const sshUser = process.env['CARBORATOR_EC2_SSH_USER'];
-        const deployDir = process.env['CARBORATOR_EC2_DEPLOY_DIR'];
+        const sshKey = process.env['carburetor_EC2_SSH_KEY'];
+        const sshKeyPath = process.env['carburetor_EC2_SSH_KEY_PATH'];
+        const sshUser = process.env['carburetor_EC2_SSH_USER'];
+        const deployDir = process.env['carburetor_EC2_DEPLOY_DIR'];
         if (sshKey) creds['sshKey'] = sshKey;
         if (sshKeyPath) creds['sshKeyPath'] = sshKeyPath;
         if (sshUser) creds['sshUser'] = sshUser;
@@ -85,7 +85,7 @@ export class ConfigLoader {
     }
   }
 
-  private validate(raw: Record<string, unknown>): CarboratorConfig {
+  private validate(raw: Record<string, unknown>): carburetorConfig {
     const project = raw['project'] as Record<string, unknown> | undefined;
     const target = raw['target'] as Record<string, unknown> | undefined;
     const vcs = raw['vcs'] as Record<string, unknown> | undefined;

@@ -74,13 +74,13 @@ target:
 
 | Variable | Description |
 |----------|-------------|
-| `CARBORATOR_AWS_ACCESS_KEY_ID` | AWS access key for EC2 instance lookup |
-| `CARBORATOR_AWS_SECRET_ACCESS_KEY` | AWS secret key |
-| `CARBORATOR_EC2_SSH_KEY` | PEM key content (inline), **OR** |
-| `CARBORATOR_EC2_SSH_KEY_PATH` | Path to PEM key file (one of the two SSH key vars is required) |
-| `CARBORATOR_EC2_SSH_USER` | SSH username (default: `ec2-user`) |
+| `carburetor_AWS_ACCESS_KEY_ID` | AWS access key for EC2 instance lookup |
+| `carburetor_AWS_SECRET_ACCESS_KEY` | AWS secret key |
+| `carburetor_EC2_SSH_KEY` | PEM key content (inline), **OR** |
+| `carburetor_EC2_SSH_KEY_PATH` | Path to PEM key file (one of the two SSH key vars is required) |
+| `carburetor_EC2_SSH_USER` | SSH username (default: `ec2-user`) |
 
-VCS environment variables (`CARBORATOR_VCS_TOKEN`, etc.) are **not required** for Docker deployments.
+VCS environment variables (`carburetor_VCS_TOKEN`, etc.) are **not required** for Docker deployments.
 
 ---
 

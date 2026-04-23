@@ -51,7 +51,7 @@
 
 ### Config Loader
 
-- [x] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `carburetor.yml` using `js-yaml`, resolves credential env vars, returns typed `CarboratorConfig`
+- [x] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `carburetor.yml` using `js-yaml`, resolves credential env vars, returns typed `carburetorConfig`
 
 **Checkpoint**: All models, interfaces, and config loader are in place. User story implementation can now begin.
 

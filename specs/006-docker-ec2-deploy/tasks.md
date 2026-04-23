@@ -165,5 +165,5 @@ Task T005: "Wire Docker type in src/engines/OrchestratingEngine.ts"
 - [P] tasks = different files, no shared dependencies — safe to implement concurrently
 - No new runtime dependencies — Docker CLI invoked via existing `spawn` pattern
 - `artifact.tar.gz` is always written to a temp `sourceDir`, never to the user's project directory
-- VCS config (`CARBORATOR_VCS_TOKEN`) is not needed or checked for Docker deployments
+- VCS config (`carburetor_VCS_TOKEN`) is not needed or checked for Docker deployments
 - Container name `carburetor-app` and image name `carburetor-docker-image` are fixed in this MVP

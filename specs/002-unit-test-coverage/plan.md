@@ -7,7 +7,7 @@
 
 ## Summary
 
-Write a complete unit test suite for the Manager and Engine layers of the Carborator deployment CLI. Tests use Bun's built-in test runner (`bun test`) with `bun:test` mocking — no additional test packages required. Coverage is measured via `bun test --coverage` (V8-based), configured in `bunfig.toml`, with a shell script enforcing per-layer thresholds. Tests are organized to mirror the source tree under `tests/unit/`.
+Write a complete unit test suite for the Manager and Engine layers of the carburetor deployment CLI. Tests use Bun's built-in test runner (`bun test`) with `bun:test` mocking — no additional test packages required. Coverage is measured via `bun test --coverage` (V8-based), configured in `bunfig.toml`, with a shell script enforcing per-layer thresholds. Tests are organized to mirror the source tree under `tests/unit/`.
 
 ---
 

@@ -113,8 +113,8 @@ class DeployCLI {
   run(argv: string[]): Promise<void>
 
   private parseArgs(argv: string[]): CLIArgs
-  private loadConfig(configPath: string): CarboratorConfig
-  private buildRequest(args: CLIArgs, config: CarboratorConfig): DeploymentRequest
+  private loadConfig(configPath: string): carburetorConfig
+  private buildRequest(args: CLIArgs, config: carburetorConfig): DeploymentRequest
   private renderProgress(event: ProgressEvent): void
   private renderOutcome(outcome: DeploymentOutcome): void
 }
