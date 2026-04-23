@@ -25,23 +25,15 @@ jobs:
       - name: Build binaries
         run: bash scripts/build-all.sh
 
-      - name: Rename binaries with platform suffix
-        run: |
-          cp dist/macos-arm64/carburetor  dist/carburetor-macos-arm64
-          cp dist/macos-x64/carburetor    dist/carburetor-macos-x64
-          cp dist/linux-arm64/carburetor  dist/carburetor-linux-arm64
-          cp dist/linux-x64/carburetor    dist/carburetor-linux-x64
-          cp dist/windows-x64/carburetor.exe dist/carburetor-windows-x64.exe
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/carburetor-macos-arm64
-            dist/carburetor-macos-x64
-            dist/carburetor-linux-arm64
-            dist/carburetor-linux-x64
-            dist/carburetor-windows-x64.exe
+            dist/macos-arm64/carburetor
+            dist/macos-x64/carburetor
+            dist/linux-arm64/carburetor
+            dist/linux-x64/carburetor
+            dist/windows-x64/carburetor.exe
             install.sh
