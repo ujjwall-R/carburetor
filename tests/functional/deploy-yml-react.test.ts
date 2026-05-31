@@ -1,5 +1,5 @@
 /**
- * Functional test: real deployment using root carburetor.yml + .env
+ * Functional test: real deployment using root megalodon.yml + .env
  *
  * Runs the full stack end-to-end — no stubs, no mocks:
  *   ConfigLoader → OrchestratingEngine → ShippingEngine
@@ -10,7 +10,7 @@
  *
  * Prerequisites:
  *   - .env at repo root with valid credentials
- *   - carburetor.yml at repo root pointing to a deployable React app + target
+ *   - megalodon.yml at repo root pointing to a deployable React app + target
  */
 import { describe, it, expect } from 'bun:test';
 import { join } from 'path';
@@ -24,9 +24,9 @@ import { VCSAccess } from '../../src/access/VCSAccess.js';
 import { CSPAccess } from '../../src/access/CSPAccess.js';
 import { ExecutionStatus } from '../../src/models/enums.js';
 
-const CONFIG_PATH = join(import.meta.dir, '..', '..', 'carburetor.yml');
+const CONFIG_PATH = join(import.meta.dir, '..', '..', 'megalodon.yml');
 
-describe('functional: deploy React app via carburetor.yml', () => {
+describe('functional: deploy React app via megalodon.yml', () => {
   it('deploys the configured React app and returns a Completed outcome', async () => {
     const configLoader = new ConfigLoader();
     const config = configLoader.load(CONFIG_PATH);

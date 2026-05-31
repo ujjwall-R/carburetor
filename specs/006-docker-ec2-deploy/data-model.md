@@ -62,16 +62,16 @@ Implements `IPipelineOrchestration`. Receives `buildConfig` (containing `dockerf
 |---|--------------------|-------------------------|----------|-----------|---------------------|
 | 1 | `docker-copy`      | Prepare Dockerfile      | Build    | Local     | `cp <abs-dockerfile-path> artifact.tar.gz` |
 | 2 | `docker-install`   | Install Docker on EC2   | Ship     | EC2 (SSH) | Idempotent: skips if `docker` already present; installs via yum or apt-get, starts daemon |
-| 3 | `docker-build`     | Build Docker image on EC2 | Ship   | EC2 (SSH) | `sudo mkdir -p /tmp/carburetor-ctx && sudo docker build --no-cache -t carburetor-docker-image -f /tmp/carburetor-artifact.tar.gz /tmp/carburetor-ctx` |
-| 4 | `docker-stop`      | Free port and remove old container | Ship | EC2 (SSH) | `sudo systemctl stop nginx 2>/dev/null \|\| true && sudo docker rm -f carburetor-app 2>/dev/null \|\| true` |
+| 3 | `docker-build`     | Build Docker image on EC2 | Ship   | EC2 (SSH) | `sudo mkdir -p /tmp/megalodon-ctx && sudo docker build --no-cache -t megalodon-docker-image -f /tmp/megalodon-artifact.tar.gz /tmp/megalodon-ctx` |
+| 4 | `docker-stop`      | Free port and remove old container | Ship | EC2 (SSH) | `sudo systemctl stop nginx 2>/dev/null \|\| true && sudo docker rm -f megalodon-app 2>/dev/null \|\| true` |
 | 5 | `certbot-install`* | Install Certbot         | Ship     | EC2 (SSH) | Idempotent: installs certbot via pip if not present *(SSL only)* |
 | 6 | `certbot-run`*     | Obtain SSL certificate  | Ship     | EC2 (SSH) | `certbot certonly --standalone -d <domain>` — skipped if cert already exists *(SSL only)* |
-| 7 | `docker-run`       | Start container         | Ship     | EC2 (SSH) | Non-SSL: `docker run -d --restart unless-stopped -p <port>:<port> --name carburetor-app carburetor-docker-image`; SSL: same with `-p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro` |
+| 7 | `docker-run`       | Start container         | Ship     | EC2 (SSH) | Non-SSL: `docker run -d --restart unless-stopped -p <port>:<port> --name megalodon-app megalodon-docker-image`; SSL: same with `-p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro` |
 
 \* Steps 5–6 are only included when `buildConfig.domain` and `buildConfig.sslEmail` are both set.
 
 **Notes on step commands**:
-- Step 1: The Dockerfile is copied to `artifact.tar.gz` locally, then SCPed to `/tmp/carburetor-artifact.tar.gz` on EC2 by `CSPAccess`.
+- Step 1: The Dockerfile is copied to `artifact.tar.gz` locally, then SCPed to `/tmp/megalodon-artifact.tar.gz` on EC2 by `CSPAccess`.
 - Step 2: Idempotent Docker install — uses `command -v docker` guard; supports both yum (Amazon Linux) and apt-get (Ubuntu/Debian).
 - Step 3: The image is built on EC2 from the transferred Dockerfile. `--no-cache` ensures a clean build every deploy.
 - Step 4: Stops nginx (to free port 80 if nginx is running) and removes the old container — always exits 0 (`|| true`), safe on first deploy.
@@ -92,7 +92,7 @@ User invokes deploy --dockerfile <path>
 [Local: cp Dockerfile → artifact.tar.gz]
          │
          ▼
-[SCP artifact to EC2 /tmp/carburetor-artifact.tar.gz] ──fail──► Error: transfer failed; stop
+[SCP artifact to EC2 /tmp/megalodon-artifact.tar.gz] ──fail──► Error: transfer failed; stop
          │ pass
          ▼
 [SSH: docker-install — idempotent] ──fail──► Error: install failed; stop
@@ -101,7 +101,7 @@ User invokes deploy --dockerfile <path>
 [SSH: docker build --no-cache on EC2] ──fail──► Error: build failed; stop
          │ pass
          ▼
-[SSH: stop nginx + docker rm -f carburetor-app || true] — always continues
+[SSH: stop nginx + docker rm -f megalodon-app || true] — always continues
          │
          ▼
 [SSH: certbot-install + certbot-run] *(SSL only)* ──fail──► Error: certbot failed; stop

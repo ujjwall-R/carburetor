@@ -9,7 +9,7 @@
 
 - Bun installed (`curl -fsSL https://bun.sh/install | bash`)
 - Cloud credentials available as environment variables (see below)
-- A `carburetor.yml` at your project root
+- A `megalodon.yml` at your project root
 
 ---
 
@@ -18,17 +18,17 @@
 ```bash
 # From source
 git clone <repo>
-cd carburetor
+cd megalodon
 bun install
-bun build --compile --outfile carburetor src/index.ts
+bun build --compile --outfile megalodon src/index.ts
 
 # Add to PATH
-mv carburetor /usr/local/bin/carburetor
+mv megalodon /usr/local/bin/megalodon
 ```
 
 ---
 
-## Setup: `carburetor.yml`
+## Setup: `megalodon.yml`
 
 Place this at your project root:
 
@@ -53,7 +53,7 @@ vcs:
 ## Set credentials
 
 ```bash
-export carburetor_VCS_TOKEN=ghp_xxxx
+export megalodon_VCS_TOKEN=ghp_xxxx
 export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
@@ -64,16 +64,16 @@ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 ```bash
 # Validate without deploying first
-carburetor validate
+meg validate
 
 # Deploy
-carburetor deploy
+meg deploy
 
 # Deploy to a specific environment
-carburetor deploy --env staging
+meg deploy --env staging
 
 # Watch full step output
-carburetor deploy --verbose
+meg deploy --verbose
 ```
 
 ---
@@ -88,5 +88,5 @@ bun run src/index.ts deploy
 bun test
 
 # Build binary
-bun build --compile --outfile carburetor src/index.ts
+bun build --compile --outfile megalodon src/index.ts
 ```

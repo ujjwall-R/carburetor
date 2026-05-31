@@ -109,31 +109,31 @@ export class DockerOrchestration extends BasePipelineOrchestration {
         id: 'docker-build',
         name: 'Build Docker image',
         type: StepType.Build,
-        command: `docker build -t carburetor-docker-image -f ${dockerfilePath} ${contextDir}`,
+        command: `docker build -t megalodon-docker-image -f ${dockerfilePath} ${contextDir}`,
       },
       {
         id: 'docker-export',
         name: 'Export image to archive',
         type: StepType.Package,
-        command: `docker save carburetor-docker-image | gzip > artifact.tar.gz`,
+        command: `docker save megalodon-docker-image | gzip > artifact.tar.gz`,
       },
       {
         id: 'docker-load',
         name: 'Load image on EC2',
         type: StepType.Ship,
-        command: `docker load < /tmp/carburetor-artifact.tar.gz`,
+        command: `docker load < /tmp/megalodon-artifact.tar.gz`,
       },
       {
         id: 'docker-stop',
         name: 'Stop existing container',
         type: StepType.Ship,
-        command: `docker rm -f carburetor-app 2>/dev/null || true`,
+        command: `docker rm -f megalodon-app 2>/dev/null || true`,
       },
       {
         id: 'docker-run',
         name: 'Start container',
         type: StepType.Ship,
-        command: `docker run -d --restart unless-stopped -p ${port}:${port} --name carburetor-app carburetor-docker-image`,
+        command: `docker run -d --restart unless-stopped -p ${port}:${port} --name megalodon-app megalodon-docker-image`,
       },
     ];
   }
@@ -186,7 +186,7 @@ async run(pipeline: Pipeline, request: DeploymentRequest): Promise<ShippingResul
   }
 
   const source = isDocker
-    ? { localPath: mkdtempSync(join(tmpdir(), 'carburetor-src-')), metadata: { commitSha: 'local' } }
+    ? { localPath: mkdtempSync(join(tmpdir(), 'megalodon-src-')), metadata: { commitSha: 'local' } }
     : await this.fetchSource(request);
 
   // rest unchanged

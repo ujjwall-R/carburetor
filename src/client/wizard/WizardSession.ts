@@ -15,7 +15,7 @@ const required = (v: string | undefined): string | undefined =>
 
 export class WizardSession {
   async run(dryRun: boolean, verbose: boolean): Promise<DeploymentRequest> {
-    clack.intro('  carburetor — Interactive Deployment Wizard  ');
+    clack.intro('  megalodon — Interactive Deployment Wizard  ');
 
     // ── Step 1: Project type ────────────────────────────────────────────────
     const projectType = await clack.select({

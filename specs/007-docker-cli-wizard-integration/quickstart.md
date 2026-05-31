@@ -7,7 +7,7 @@
 
 ## Prerequisites
 
-- `carburetor` CLI built and on `$PATH`
+- "`meg`" CLI built and on `$PATH`
 - A provisioned EC2 instance (Docker already installed, public IP assigned, port 80 open in security group)
 - AWS credentials with EC2 describe permissions
 - SSH key pair for the EC2 instance
@@ -17,7 +17,7 @@
 ## Deploy a Docker Container via Interactive Wizard
 
 ```bash
-carburetor deploy --interactive
+meg deploy --interactive
 ```
 
 Select **Docker Container** at the project type prompt. The wizard collects all connection details:
@@ -49,13 +49,13 @@ After confirming the summary, the tool runs the full pipeline and reports:
 
 ## Deploy via Config File (unchanged)
 
-The existing `carburetor.yml` + `--dockerfile` path continues to work as before:
+The existing `megalodon.yml` + `--dockerfile` path continues to work as before:
 
 ```bash
-carburetor deploy --dockerfile ./Dockerfile
+meg deploy --dockerfile ./Dockerfile
 ```
 
-With `carburetor.yml` containing:
+With `megalodon.yml` containing:
 ```yaml
 project:
   type: docker
@@ -73,7 +73,7 @@ target:
 ## React App Wizard (updated — no directory prompt)
 
 ```bash
-carburetor deploy --interactive
+meg deploy --interactive
 ```
 
 Select **React App**. The wizard no longer asks for a deployment directory — `/var/www/html` is used automatically.

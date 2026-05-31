@@ -101,7 +101,7 @@ export class CSPAccess implements ICSPAccess {
     if (!sshKey && !sshKeyPath) {
       throw new Error(
         'EC2 deployment requires an SSH key.\n' +
-        '  Set carburetor_EC2_SSH_KEY (PEM content) or carburetor_EC2_SSH_KEY_PATH (path to PEM file).'
+        '  Set megalodon_EC2_SSH_KEY (PEM content) or megalodon_EC2_SSH_KEY_PATH (path to PEM file).'
       );
     }
 
@@ -111,7 +111,7 @@ export class CSPAccess implements ICSPAccess {
     let keyFile = sshKeyPath ?? '';
     let tempKeyFile: string | undefined;
     if (sshKey) {
-      const tmpDir = mkdtempSync(join(tmpdir(), 'carburetor-key-'));
+      const tmpDir = mkdtempSync(join(tmpdir(), 'megalodon-key-'));
       tempKeyFile = join(tmpDir, 'deploy.pem');
       writeFileSync(tempKeyFile, sshKey, { mode: 0o600 });
       keyFile = tempKeyFile;
@@ -132,7 +132,7 @@ export class CSPAccess implements ICSPAccess {
       await this.runCommand('scp', [
         ...sshOpts,
         artifact.path,
-        `${sshUser}@${publicDns}:/tmp/carburetor-artifact.tar.gz`,
+        `${sshUser}@${publicDns}:/tmp/megalodon-artifact.tar.gz`,
       ]);
       process.stdout.write(`  ✓ Transfer artifact to EC2\n`);
 

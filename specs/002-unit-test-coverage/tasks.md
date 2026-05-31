@@ -39,7 +39,7 @@
   - `makeFailedPipelineResult(): PipelineResult` — status Failed, failedStep with `error: 'Process exited with code 1'`
   - `makeDeploymentResult(): { resourceId: string; platform: CloudPlatform; region: string; deployedAt: string }` — minimal CSP deploy result shape
 - [x] T006 Create `tests/helpers/mocks.ts` — export the following factory functions (each creates fresh `mock()` instances; import `mock` from `bun:test`, import fixture builders from `./fixtures.ts`, import interface types from `src/`):
-  - `makeVCSAccessMock(): IVCSAccess` — `validateCredentials` resolves `true`, `fetchSource` resolves `{ localPath: '/tmp/carburetor-src-test', metadata: {} }`
+  - `makeVCSAccessMock(): IVCSAccess` — `validateCredentials` resolves `true`, `fetchSource` resolves `{ localPath: '/tmp/megalodon-src-test', metadata: {} }`
   - `makeCSPAccessMock(): ICSPAccess` — `validateCredentials` resolves `true`, `deploy` resolves `makeDeploymentResult()`, `getEndpoint` returns `'https://test-app.example.com'`
   - `makeExecutorMock(): IPipelineExecutor` — `execute` resolves `makeCompletedPipelineResult()`
   - `makeOrchestratingEngineMock(): IOrchestratingEngine` — `buildPipeline` returns `makePipeline()`

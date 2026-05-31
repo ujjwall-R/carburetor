@@ -7,15 +7,15 @@ No new data models or entities are introduced. The test uses existing types unch
 
 ## Entities Used (from existing codebase)
 
-- **`carburetorConfig`** — produced by `ConfigLoader.load('carburetor.yml')`
+- **`megalodonConfig`** — produced by `ConfigLoader.load('megalodon.yml')`
 - **`DeploymentRequest`** — assembled from config + resolved credentials; passed to `DeploymentManager.deploy()`
 - **`DeploymentOutcome`** — returned by `manager.deploy()`; test asserts `outcome.status === Completed`
 
 ## Pipeline Flow (real, no stubs)
 
 ```
-carburetor.yml
-  └─► ConfigLoader.load()  →  carburetorConfig
+megalodon.yml
+  └─► ConfigLoader.load()  →  megalodonConfig
         └─► resolveVCSCredentials()  →  VCSCredentials   (from process.env via .env)
         └─► resolveCSPCredentials()  →  CSPCredentials   (from process.env via .env)
               └─► DeploymentManager.deploy(request)

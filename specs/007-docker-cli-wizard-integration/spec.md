@@ -11,9 +11,9 @@
 
 A developer runs the tool in interactive mode and wants to deploy a Docker-based single-container application. The wizard presents Docker as a project type option and collects the required information: Dockerfile path, EC2 instance ID, AWS credentials, and SSH key details. No VCS credentials or deploy directory is requested for Docker projects.
 
-**Why this priority**: The interactive wizard is the guided entry point for users. Docker single-container deployment already works via `carburetor.yml`; exposing it through the wizard closes the gap so users can deploy Docker containers without writing a config file.
+**Why this priority**: The interactive wizard is the guided entry point for users. Docker single-container deployment already works via `megalodon.yml`; exposing it through the wizard closes the gap so users can deploy Docker containers without writing a config file.
 
-**Independent Test**: Can be tested by running `carburetor deploy --interactive`, selecting Docker as the project type, providing a Dockerfile path and EC2/AWS connection details, and verifying that the deployment proceeds without asking for VCS credentials or deploy directory.
+**Independent Test**: Can be tested by running "`meg deploy --interactive`", selecting Docker as the project type, providing a Dockerfile path and EC2/AWS connection details, and verifying that the deployment proceeds without asking for VCS credentials or deploy directory.
 
 **Acceptance Scenarios**:
 
@@ -30,7 +30,7 @@ A developer runs the tool in interactive mode to deploy a React application. The
 
 **Why this priority**: The deploy directory prompt adds friction without value for React app deployments. The default is the correct answer for virtually every user, and asking for it introduces a source of misconfiguration.
 
-**Independent Test**: Can be tested by running `carburetor deploy --interactive`, selecting React App, completing all prompts, and verifying that no deploy directory question appears and that the resulting deployment targets `/var/www/html`.
+**Independent Test**: Can be tested by running "`meg deploy --interactive`", selecting React App, completing all prompts, and verifying that no deploy directory question appears and that the resulting deployment targets `/var/www/html`.
 
 **Acceptance Scenarios**:
 

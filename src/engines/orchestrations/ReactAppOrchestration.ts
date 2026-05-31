@@ -45,8 +45,8 @@ export class ReactAppOrchestration extends BasePipelineOrchestration {
             'if command -v dnf >/dev/null 2>&1; then sudo dnf install nginx -y; ' +
             'elif command -v yum >/dev/null 2>&1; then sudo yum install nginx -y; ' +
             'else sudo apt-get install nginx -y; fi)',
-          // Write carburetor nginx config: correct document root + SPA routing
-          `printf 'server {\\n    listen 80 default_server;\\n    server_name _;\\n    root ${deployDir};\\n    index index.html;\\n    location / { try_files $uri $uri/ /index.html; }\\n}\\n' | sudo tee /etc/nginx/conf.d/carburetor.conf > /dev/null`,
+          // Write megalodon nginx config: correct document root + SPA routing
+          `printf 'server {\\n    listen 80 default_server;\\n    server_name _;\\n    root ${deployDir};\\n    index index.html;\\n    location / { try_files $uri $uri/ /index.html; }\\n}\\n' | sudo tee /etc/nginx/conf.d/megalodon.conf > /dev/null`,
           // Start and enable nginx
           'sudo systemctl enable nginx',
           'sudo systemctl start nginx',
@@ -55,9 +55,9 @@ export class ReactAppOrchestration extends BasePipelineOrchestration {
           // Clear old files before extracting so stale assets don't linger
           `sudo find ${deployDir} -mindepth 1 -delete`,
           // Extract artifact (strip top-level folder from the tar, e.g. build/ -> deployDir/)
-          `sudo tar -xzf /tmp/carburetor-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
+          `sudo tar -xzf /tmp/megalodon-artifact.tar.gz --strip-components=1 -C ${deployDir}`,
           // Clean up
-          `rm /tmp/carburetor-artifact.tar.gz`,
+          `rm /tmp/megalodon-artifact.tar.gz`,
           // Validate config then reload nginx
           'sudo nginx -t && sudo systemctl reload nginx',
         ].join(' && '),

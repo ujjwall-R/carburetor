@@ -31,9 +31,9 @@ jobs:
           name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/macos-arm64/carburetor-macos-arm64
-            dist/macos-x64/carburetor-macos-x64
-            dist/linux-arm64/carburetor-linux-arm64
-            dist/linux-x64/carburetor-linux-x64
-            dist/windows-x64/carburetor.exe
+            dist/macos-arm64/meg-macos-arm64
+            dist/macos-x64/meg-macos-x64
+            dist/linux-arm64/meg-linux-arm64
+            dist/linux-x64/meg-linux-x64
+            dist/windows-x64/meg.exe
             install.sh

@@ -25,13 +25,13 @@ export class DockerOrchestration extends BasePipelineOrchestration {
         id: 'docker-build',
         name: 'Build Docker image on EC2',
         type: StepType.Ship,
-        command: `sudo mkdir -p /tmp/carburetor-ctx && sudo docker build --no-cache -t carburetor-docker-image -f /tmp/carburetor-artifact.tar.gz /tmp/carburetor-ctx`,
+        command: `sudo mkdir -p /tmp/megalodon-ctx && sudo docker build --no-cache -t megalodon-docker-image -f /tmp/megalodon-artifact.tar.gz /tmp/megalodon-ctx`,
       },
       {
         id: 'docker-stop',
         name: 'Free port 80 and remove old container',
         type: StepType.Ship,
-        command: `sudo systemctl stop nginx 2>/dev/null || true && sudo docker rm -f carburetor-app 2>/dev/null || true`,
+        command: `sudo systemctl stop nginx 2>/dev/null || true && sudo docker rm -f megalodon-app 2>/dev/null || true`,
       },
       ...(buildConfig.domain && buildConfig.sslEmail ? [{
         id: 'certbot-install',
@@ -49,8 +49,8 @@ export class DockerOrchestration extends BasePipelineOrchestration {
         name: 'Start container',
         type: StepType.Ship,
         command: buildConfig.domain && buildConfig.sslEmail
-          ? `sudo docker run -d --restart unless-stopped -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro --name carburetor-app carburetor-docker-image`
-          : `sudo docker run -d --restart unless-stopped -p ${buildConfig.containerPort ?? 80}:${buildConfig.containerPort ?? 80} --name carburetor-app carburetor-docker-image`,
+          ? `sudo docker run -d --restart unless-stopped -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro --name megalodon-app megalodon-docker-image`
+          : `sudo docker run -d --restart unless-stopped -p ${buildConfig.containerPort ?? 80}:${buildConfig.containerPort ?? 80} --name megalodon-app megalodon-docker-image`,
       },
     ];
   }

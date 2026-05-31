@@ -1,15 +1,15 @@
 {
-  "name": "carburetor",
+  "name": "megalodon",
   "version": "0.1.0",
   "description": "CLI tool that deploys applications to cloud platforms",
   "type": "module",
   "main": "src/index.ts",
   "bin": {
-    "carburetor": "./carburetor"
+    "meg": "./meg"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build --compile --minify --outfile carburetor src/index.ts && bash scripts/sign.sh carburetor",
+    "build": "bun build --compile --minify --outfile meg src/index.ts && bash scripts/sign.sh meg",
     "build:all": "bash scripts/build-all.sh",
     "test": "bun test",
     "test:coverage": "bun test --coverage",

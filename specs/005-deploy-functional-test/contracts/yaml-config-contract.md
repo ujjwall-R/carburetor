@@ -1,13 +1,13 @@
-# Contract: Root `carburetor.yml` + `.env`
+# Contract: Root `megalodon.yml` + `.env`
 
 **Feature**: `005-deploy-functional-test`  
 **Date**: 2026-04-18
 
 ---
 
-## `carburetor.yml` (repo root)
+## `megalodon.yml` (repo root)
 
-The functional test reads this file directly — no copy or fixture. It must be a valid Carburetor config. See `carburetor.example.yml` for the full schema.
+The functional test reads this file directly — no copy or fixture. It must be a valid Megalodon config. See `megalodon.example.yml` for the full schema.
 
 Minimum fields required for the test to reach the deployment step:
 
@@ -27,13 +27,13 @@ Minimum fields required for the test to reach the deployment step:
 
 Loaded automatically by Bun. Never committed to the repository.
 
-Required variables depend on `target.platform` in `carburetor.yml`:
+Required variables depend on `target.platform` in `megalodon.yml`:
 
 | Variable | Required for |
 |----------|-------------|
-| `carburetor_VCS_TOKEN` | All platforms |
+| `megalodon_VCS_TOKEN` | All platforms |
 | `AWS_ACCESS_KEY_ID` | aws, lambda |
 | `AWS_SECRET_ACCESS_KEY` | aws, lambda |
-| `carburetor_EC2_SSH_KEY` or `carburetor_EC2_SSH_KEY_PATH` | EC2 targets |
+| `megalodon_EC2_SSH_KEY` or `megalodon_EC2_SSH_KEY_PATH` | EC2 targets |
 | `GOOGLE_APPLICATION_CREDENTIALS` | gcp |
 | `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET` + `AZURE_TENANT_ID` + `AZURE_SUBSCRIPTION_ID` | azure |

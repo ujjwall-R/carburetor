@@ -20,7 +20,7 @@
 - [x] T002 [P] Create full source directory tree: `src/{client,managers,engines,engines/executors,access,interfaces,models,config}/` and `tests/{unit,integration}/`
 - [x] T003 [P] Install runtime dependencies: `commander`, `js-yaml`, `simple-git` — run `bun add commander js-yaml simple-git`
 - [x] T004 [P] Install type declarations: `bun add -d @types/js-yaml @types/node`
-- [x] T005 [P] Add `build` and `dev` scripts to `package.json`: `bun run src/index.ts` for dev, `bun build --compile --outfile carburetor src/index.ts` for build
+- [x] T005 [P] Add `build` and `dev` scripts to `package.json`: `bun run src/index.ts` for dev, `bun build --compile --outfile megalodon src/index.ts` for build
 
 ---
 
@@ -51,7 +51,7 @@
 
 ### Config Loader
 
-- [x] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `carburetor.yml` using `js-yaml`, resolves credential env vars, returns typed `carburetorConfig`
+- [x] T019 Create `ConfigLoader` class in `src/config/ConfigLoader.ts` — reads and validates `megalodon.yml` using `js-yaml`, resolves credential env vars, returns typed `megalodonConfig`
 
 **Checkpoint**: All models, interfaces, and config loader are in place. User story implementation can now begin.
 
@@ -59,9 +59,9 @@
 
 ## Phase 3: User Story 1 — Deploy a Standard App (Priority: P1) 🎯 MVP
 
-**Goal**: A developer can run `carburetor deploy` to deploy a standard React or Node.js app from GitHub to AWS with a single command.
+**Goal**: A developer can run "`meg deploy`" to deploy a standard React or Node.js app from GitHub to AWS with a single command.
 
-**Independent Test**: Clone a sample React repo, configure `carburetor.yml` for AWS, run `carburetor deploy`, verify the app is live at the returned URL.
+**Independent Test**: Clone a sample React repo, configure `megalodon.yml` for AWS, run "`meg deploy`", verify the app is live at the returned URL.
 
 ### OrchestratingEngine
 
@@ -92,9 +92,9 @@
 
 - [x] T027 [US1] Implement `DeployCLI` class in `src/client/DeployCLI.ts` — uses `commander` to register `deploy` and `validate` subcommands; `run()` parses args, calls `ConfigLoader`, constructs `DeploymentRequest`, calls `DeploymentManager.deploy()`; `renderOutcome()` prints live URL on `completed`, tracking URL on `pending`, step error on `failed`
 - [x] T028 [US1] Implement `src/index.ts` — DI wiring: instantiates `LocalPipelineExecutor`, `VCSAccess`, `CSPAccess`, `ShippingEngine`, `OrchestratingEngine`, `DeploymentManager`, `DeployCLI`; calls `DeployCLI.run(process.argv)`
-- [x] T029 [US1] Implement `carburetor validate` subcommand in `src/client/DeployCLI.ts` — calls `ShippingEngine.validateCredentials()`, prints per-check pass/fail, exits with code 1 on any failure
+- [x] T029 [US1] Implement "`meg validate`" subcommand in `src/client/DeployCLI.ts` — calls `ShippingEngine.validateCredentials()`, prints per-check pass/fail, exits with code 1 on any failure
 
-**Checkpoint**: `carburetor deploy` fully works for a standard React/Node app → GitHub → AWS. Build, run the command, verify live URL returned.
+**Checkpoint**: "`meg deploy`" fully works for a standard React/Node app → GitHub → AWS. Build, run the command, verify live URL returned.
 
 ---
 
@@ -102,27 +102,27 @@
 
 **Goal**: Detect a Dockerfile, build the image, push to a container registry, deploy the container to the cloud.
 
-**Independent Test**: Add a `Dockerfile` to a sample project, run `carburetor deploy`, verify container is running in the cloud.
+**Independent Test**: Add a `Dockerfile` to a sample project, run "`meg deploy`", verify container is running in the cloud.
 
 - [ ] T030 [US2] Extend `OrchestratingEngine.buildPipeline()` in `src/engines/OrchestratingEngine.ts` to detect `ProjectType.Docker` (checks for `Dockerfile` in `sourceDir`); build Docker-specific pipeline steps: `docker build`, `docker tag`, `docker push`
 - [ ] T031 [US2] Extend `LocalPipelineExecutor` in `src/engines/executors/LocalPipelineExecutor.ts` to handle Docker step types — runs `docker build -t <tag> .` and `docker push <tag>` as child processes
 - [ ] T032 [US2] Extend `CSPAccess` in `src/access/CSPAccess.ts` to support container registry operations for `CloudPlatform.AWS` (ECR push + ECS/Fargate deploy via `@aws-sdk/client-ecr` and `@aws-sdk/client-ecs`); install: `bun add @aws-sdk/client-ecr @aws-sdk/client-ecs`
 
-**Checkpoint**: `carburetor deploy` detects Docker and runs a full container deploy independently of US1.
+**Checkpoint**: "`meg deploy`" detects Docker and runs a full container deploy independently of US1.
 
 ---
 
 ## Phase 5: User Story 3 — Custom Build/Deploy Script (Priority: P3)
 
-**Goal**: User specifies a custom build script in `carburetor.yml`; the tool runs it instead of the built-in default steps.
+**Goal**: User specifies a custom build script in `megalodon.yml`; the tool runs it instead of the built-in default steps.
 
-**Independent Test**: Set `project.build.script: "make build"` in config, run `carburetor deploy`, verify the custom script is invoked and its output artifact is used.
+**Independent Test**: Set `project.build.script: "make build"` in config, run "`meg deploy`", verify the custom script is invoked and its output artifact is used.
 
 - [ ] T033 [US3] Extend `OrchestratingEngine.buildPipeline()` in `src/engines/OrchestratingEngine.ts` to detect `ProjectType.Custom` when `buildConfig.buildScript` is set; generate a single `PipelineStep` with `type: StepType.Build, command: buildConfig.buildScript`
 - [ ] T034 [US3] Extend `LocalPipelineExecutor` in `src/engines/executors/LocalPipelineExecutor.ts` to respect `PipelineStep.command` for custom steps — run the exact command string via `Bun.spawn()`; treat non-zero exit as `StepResult.success: false`
 - [ ] T035 [US3] Update `ConfigLoader` in `src/config/ConfigLoader.ts` to validate `project.build.script` and `project.build.outputDir` fields and surface clear errors when a custom script path doesn't exist
 
-**Checkpoint**: `carburetor deploy` invokes custom scripts transparently. Standard React and Docker paths still work.
+**Checkpoint**: "`meg deploy`" invokes custom scripts transparently. Standard React and Docker paths still work.
 
 ---
 
@@ -130,7 +130,7 @@
 
 **Goal**: Same command, same config structure works for GCP and Azure targets, not just AWS.
 
-**Independent Test**: Change `target.platform` to `gcp` or `azure` in `carburetor.yml` and run `carburetor deploy` — app deploys to the correct cloud without any code change.
+**Independent Test**: Change `target.platform` to `gcp` or `azure` in `megalodon.yml` and run "`meg deploy`" — app deploys to the correct cloud without any code change.
 
 - [ ] T036 [P] [US4] Install GCP SDKs: `bun add @google-cloud/storage @google-cloud/run`
 - [ ] T037 [P] [US4] Install Azure SDKs: `bun add @azure/storage-blob @azure/arm-appservice`
@@ -149,9 +149,9 @@
 - [ ] T041 [P] Implement real-time TTY progress output in `src/client/DeployCLI.ts` — print `[N/total] Step name...` lines with `✓` / `✗` on completion; flush per step
 - [ ] T042 [P] Implement `--json` flag output mode in `src/client/DeployCLI.ts` — emit NDJSON events per step and final outcome as defined in `contracts/cli-schema.md`
 - [ ] T043 [P] Implement `JenkinsPipelineExecutor` in `src/engines/executors/JenkinsPipelineExecutor.ts` — `execute()` POSTs pipeline params to Jenkins REST API, polls `lastBuild` status every `pollIntervalMs`; respects `waitForCompletion` flag; returns `PipelineResult { status: 'pending', trackingUrl }` in non-blocking mode
-- [ ] T044 Implement `carburetor version` subcommand in `src/client/DeployCLI.ts` — reads version from `package.json` and prints it
+- [ ] T044 Implement "`meg version`" subcommand in `src/client/DeployCLI.ts` — reads version from `package.json` and prints it
 - [ ] T045 Harden error messages across all layers — ensure every caught error includes which step failed and what the user should do next (FR-011); update `ShippingEngine`, `VCSAccess`, `CSPAccess`
-- [ ] T046 Build and smoke-test the compiled binary: `bun build --compile --outfile carburetor src/index.ts`; run `./carburetor --help` and `./carburetor validate` against a test config
+- [ ] T046 Build and smoke-test the compiled binary: `bun build --compile --outfile megalodon src/index.ts`; run `./meg --help` and `./meg validate` against a test config
 
 ---
 
@@ -226,7 +226,7 @@ T040  LambdaAdapter in src/access/CSPAccess.ts
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational — **do not skip**
 3. Complete Phase 3: User Story 1 (T020–T029)
-4. **STOP and VALIDATE**: run `carburetor deploy` against a real React repo → AWS
+4. **STOP and VALIDATE**: run "`meg deploy`" against a real React repo → AWS
 5. Ship MVP
 
 ### Incremental Delivery
@@ -247,4 +247,4 @@ T040  LambdaAdapter in src/access/CSPAccess.ts
 - Each user story phase ends with a concrete checkpoint test (described above)
 - DI wiring lives entirely in `src/index.ts` — no class constructs its own dependencies
 - `IPipelineExecutor` implementations live under `src/engines/executors/` — not `src/access/`
-- Credentials are never read from `carburetor.yml` — always from environment variables
+- Credentials are never read from `megalodon.yml` — always from environment variables

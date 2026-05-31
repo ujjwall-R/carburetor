@@ -66,10 +66,10 @@ export class ShippingEngine implements IShippingEngine {
     }
 
     const source = isDocker
-      ? { localPath: mkdtempSync(join(tmpdir(), 'carburetor-src-')), metadata: { commitSha: 'local' } }
+      ? { localPath: mkdtempSync(join(tmpdir(), 'megalodon-src-')), metadata: { commitSha: 'local' } }
       : await this.fetchSource(request);
 
-    const artifactDir = mkdtempSync(join(tmpdir(), 'carburetor-artifacts-'));
+    const artifactDir = mkdtempSync(join(tmpdir(), 'megalodon-artifacts-'));
     const pipelineResult = await this.executor.execute(pipeline, {
       sourceDir: source.localPath,
       artifactDir,
@@ -108,7 +108,7 @@ export class ShippingEngine implements IShippingEngine {
   }
 
   private async fetchSource(request: DeploymentRequest): Promise<SourceArtifact> {
-    const destDir = mkdtempSync(join(tmpdir(), 'carburetor-src-'));
+    const destDir = mkdtempSync(join(tmpdir(), 'megalodon-src-'));
     const metadata = await this.vcsAccess.fetchSource(
       request.vcsConfig,
       request.vcsCredentials,

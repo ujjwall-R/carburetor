@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Build carburetor binaries for all platforms from any host OS.
+# Build megalodon binaries for all platforms from any host OS.
 set -euo pipefail
 
 sign_macos() {
   local OUTFILE="$1"
   local ENTITLEMENTS
-  ENTITLEMENTS="$(mktemp /tmp/carburetor-entitlements.XXXX.plist)"
+  ENTITLEMENTS="$(mktemp /tmp/megalodon-entitlements.XXXX.plist)"
 
   cat > "$ENTITLEMENTS" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -46,11 +46,11 @@ build() {
   fi
 }
 
-build bun-darwin-arm64  macos-arm64  carburetor-macos-arm64  true
-build bun-darwin-x64    macos-x64    carburetor-macos-x64    true
-build bun-linux-arm64   linux-arm64  carburetor-linux-arm64  false
-build bun-linux-x64     linux-x64    carburetor-linux-x64    false
-build bun-windows-x64   windows-x64  carburetor.exe          false
+build bun-darwin-arm64  macos-arm64  meg-macos-arm64  true
+build bun-darwin-x64    macos-x64    meg-macos-x64    true
+build bun-linux-arm64   linux-arm64  meg-linux-arm64  false
+build bun-linux-x64     linux-x64    meg-linux-x64    false
+build bun-windows-x64   windows-x64  meg.exe          false
 
 echo ""
 echo "Binaries written to dist/:"

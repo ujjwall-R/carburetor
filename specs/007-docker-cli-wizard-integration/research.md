@@ -54,7 +54,7 @@
 
 **Decision**: Remove the `clack.text` prompt for deploy directory entirely. Hardcode `'/var/www/html'` in `cspCredentials.deployDir` during request assembly — this is already the default in `ReactAppOrchestration.buildSteps`.
 
-**Rationale**: The default is universally correct for wizard-initiated React deployments. The config-file path (`carburetor_EC2_DEPLOY_DIR` env var) remains available for non-wizard users who need a custom directory.
+**Rationale**: The default is universally correct for wizard-initiated React deployments. The config-file path (`megalodon_EC2_DEPLOY_DIR` env var) remains available for non-wizard users who need a custom directory.
 
 ---
 

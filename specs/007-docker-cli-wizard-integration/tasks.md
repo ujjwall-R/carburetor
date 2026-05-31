@@ -24,9 +24,9 @@
 
 ## Phase 2: User Story 1 — Docker Wizard Path (Priority: P1) 🎯 MVP
 
-**Goal**: Running `carburetor deploy --interactive` and selecting Docker Container collects Dockerfile path, EC2 instance ID, AWS credentials, and SSH details — no VCS credentials or deploy directory — then fires the existing Docker single-container pipeline.
+**Goal**: Running "`meg deploy --interactive`" and selecting Docker Container collects Dockerfile path, EC2 instance ID, AWS credentials, and SSH details — no VCS credentials or deploy directory — then fires the existing Docker single-container pipeline.
 
-**Independent Test**: Run `carburetor deploy --interactive`, select Docker Container, provide all prompts, confirm, and verify the deployment fires with `project.type === Docker` and `buildConfig.dockerfilePath` set. For unit testing: mock clack prompts with Docker inputs and assert request shape.
+**Independent Test**: Run "`meg deploy --interactive`", select Docker Container, provide all prompts, confirm, and verify the deployment fires with `project.type === Docker` and `buildConfig.dockerfilePath` set. For unit testing: mock clack prompts with Docker inputs and assert request shape.
 
 ### Implementation for User Story 1
 
@@ -41,7 +41,7 @@
 
 **Goal**: Selecting React App in interactive mode no longer prompts for a deploy directory; `/var/www/html` is used automatically.
 
-**Independent Test**: Run `carburetor deploy --interactive`, select React App, complete all prompts, verify no deploy directory question is shown and `cspCredentials['deployDir']` is `undefined` in the assembled request.
+**Independent Test**: Run "`meg deploy --interactive`", select React App, complete all prompts, verify no deploy directory question is shown and `cspCredentials['deployDir']` is `undefined` in the assembled request.
 
 ### Implementation for User Story 2
 
@@ -84,7 +84,7 @@
 1. T001 — add Docker to options
 2. T002 — Docker wizard branch
 3. T003 — Docker test
-4. **STOP and VALIDATE**: `carburetor deploy --interactive` → Docker Container → deploys
+4. **STOP and VALIDATE**: "`meg deploy --interactive`" → Docker Container → deploys
 
 ### Incremental Delivery
 
@@ -98,6 +98,6 @@
 ## Notes
 
 - No engine, access layer, model, or CLI flag changes — all work is in `WizardSession.ts`, `prompts.ts`, and `WizardSession.test.ts`
-- The `--dockerfile` CLI flag path (via `carburetor.yml`) is unchanged
+- The `--dockerfile` CLI flag path (via `megalodon.yml`) is unchanged
 - Port 80 is fixed; `DockerOrchestration.ts` is not modified
-- `deployDir` removed from wizard only; `carburetor_EC2_DEPLOY_DIR` env var path remains available for non-wizard users
+- `deployDir` removed from wizard only; `megalodon_EC2_DEPLOY_DIR` env var path remains available for non-wizard users
