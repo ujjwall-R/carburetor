@@ -49,12 +49,12 @@ A developer runs the tool in interactive mode to deploy a React application. The
 ### Functional Requirements
 
 - **FR-001**: System MUST add Docker Single Container as a selectable project type in the interactive wizard.
-- **FR-002**: System MUST collect the following in the Docker wizard path: Dockerfile path (with file-existence validation), AWS region, EC2 instance ID, AWS access key ID, AWS secret access key, SSH key (path or inline), and SSH username; system MUST NOT request VCS token or deploy directory for Docker projects.
+- **FR-002**: System MUST collect the following in the Docker wizard path: Dockerfile path (with file-existence validation), AWS region, EC2 instance ID, AWS access key ID, AWS secret access key, SSH key (path or inline), SSH username, and an optional SSL setup (domain + Let's Encrypt email); system MUST NOT request VCS token or deploy directory for Docker projects.
 - **FR-003**: System MUST display a confirmation summary before executing deployment in the Docker wizard path.
 - **FR-004**: System MUST remove the deploy directory prompt from the React app interactive wizard path.
 - **FR-005**: System MUST use `/var/www/html` as the deploy directory for React app wizard sessions.
 - **FR-006**: System MUST validate that the Dockerfile path provided in the wizard exists on disk before assembling the deployment request.
-- **FR-007**: System MUST always bind the Docker container to port 80; no port configuration is exposed to the user.
+- **FR-007**: System MUST bind the Docker container to port 80 by default; no port configuration is exposed to the user via the wizard. When SSL is enabled, ports 80 and 443 are both bound and the Let's Encrypt certificate volume is mounted.
 
 ### Key Entities
 
@@ -65,7 +65,7 @@ A developer runs the tool in interactive mode to deploy a React application. The
 
 ### Measurable Outcomes
 
-- **SC-001**: The Docker interactive wizard path collects all required information in 8 or fewer prompts (project type, Dockerfile path, region, instance ID, AWS keys ×2, SSH key, SSH user) with no VCS-related questions and no port prompt.
+- **SC-001**: The Docker interactive wizard path collects all required information in 11 or fewer prompts (project type, Dockerfile path, cloud platform, service type, region, environment, instance ID, AWS keys ×2, SSH key mode + key, SSH user, SSL confirm, and optionally domain + email) with no VCS-related questions and no port prompt.
 - **SC-002**: The React app interactive wizard path is reduced by exactly one prompt compared to the current implementation (deploy directory removed).
 - **SC-003**: An invalid Dockerfile path is caught and reported inline in the wizard before any deployment begins — no partial pipeline run occurs.
 - **SC-004**: A Docker container deployed via the wizard is reachable on port 80 within 60 seconds of the wizard reporting success.

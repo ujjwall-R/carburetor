@@ -97,7 +97,7 @@ carburetor deploy --dockerfile ./Dockerfile --port 3000
 | Transfer archive | Local → EC2 | SCP to `/tmp/carburetor-artifact.tar.gz` on EC2 |
 | Load image | EC2 | `docker load` from the archive |
 | Stop existing container | EC2 | `docker rm -f carburetor-app` (safe no-op if none running) |
-| Start container | EC2 | `docker run -d -p PORT:PORT --name carburetor-app` |
+| Start container | EC2 | `docker run -d --restart unless-stopped -p <containerPort>:<containerPort> --name carburetor-app carburetor-docker-image` (with SSL: also binds 80/443 and mounts `/etc/letsencrypt`) |
 
 ---
 

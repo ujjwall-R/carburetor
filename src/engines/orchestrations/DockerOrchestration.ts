@@ -48,7 +48,9 @@ export class DockerOrchestration extends BasePipelineOrchestration {
         id: 'docker-run',
         name: 'Start container',
         type: StepType.Ship,
-        command: `sudo docker run -d --restart unless-stopped -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro --name carburetor-app carburetor-docker-image`,
+        command: buildConfig.domain && buildConfig.sslEmail
+          ? `sudo docker run -d --restart unless-stopped -p 80:80 -p 443:443 -v /etc/letsencrypt:/etc/letsencrypt:ro --name carburetor-app carburetor-docker-image`
+          : `sudo docker run -d --restart unless-stopped -p ${buildConfig.containerPort ?? 80}:${buildConfig.containerPort ?? 80} --name carburetor-app carburetor-docker-image`,
       },
     ];
   }

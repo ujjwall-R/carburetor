@@ -29,6 +29,7 @@ Options:
   -c, --config <path>      Path to carburetor.yml (default: ./carburetor.yml)
   -t, --target <platform>  Override target platform: aws | gcp | azure | lambda
   -e, --env <name>         Override environment: production | staging | preview
+      --dockerfile <path>  Path to Dockerfile — enables Docker EC2 deploy mode; container always serves on port 80
       --dry-run            Validate config and credentials without deploying
       --json               Emit newline-delimited JSON events (for CI/log aggregators)
   -v, --verbose            Show full command output for each step

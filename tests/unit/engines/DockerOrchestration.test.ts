@@ -5,7 +5,7 @@ import { StepType } from '../../../src/models/enums.js';
 
 describe('DockerOrchestration', () => {
   const orchestration = new DockerOrchestration();
-  const buildConfig = { dockerfilePath: '/project/Dockerfile' };
+  const buildConfig = { dockerfilePath: '/project/Dockerfile', containerPort: 80 };
 
   it('produces exactly 5 steps', () => {
     const steps = orchestration.buildSteps(buildConfig);
