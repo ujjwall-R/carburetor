@@ -6,7 +6,7 @@
 
 ## Phase 1: Implementation
 
-- [x] T001 Create `tests/functional/deploy-yml-react.test.ts` — one test case wiring the full real stack (`ConfigLoader` + `OrchestratingEngine` + `ShippingEngine` + `LocalPipelineExecutor` + `VCSAccess` + `CSPAccess`) against the root `carburetor.yml`, with a 120-second timeout
+- [x] T001 Create `tests/functional/deploy-yml-react.test.ts` — one test case wiring the full real stack (`ConfigLoader` + `OrchestratingEngine` + `ShippingEngine` + `LocalPipelineExecutor` + `VCSAccess` + `CSPAccess`) against the root `megalodon.yml`, with a 120-second timeout
 
 ---
 

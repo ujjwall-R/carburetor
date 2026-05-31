@@ -1,9 +1,9 @@
-# carburetor
+# megalodon
 
-Deploy applications to cloud platforms with a single command. carburetor handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
+Deploy applications to cloud platforms with a single command. megalodon handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
 
 ```
-carburetor deploy
+meg 
 ```
 
 ---
@@ -38,8 +38,8 @@ curl -fsSL https://bun.sh/install | bash
 ### Option 1 — Run from source
 
 ```bash
-git clone https://github.com/your-org/carburetor.git
-cd carburetor
+git clone https://github.com/your-org/megalodon.git
+cd megalodon
 bun install
 ```
 
@@ -57,18 +57,18 @@ bun run src/index.ts deploy
 bun run build
 ```
 
-Produces a signed, ready-to-run `./carburetor` binary in the project root.
+Produces a signed, ready-to-run `./meg` binary in the project root.
 
 Move it somewhere on your `$PATH`:
 
 ```bash
-mv carburetor /usr/local/bin/carburetor
+mv meg /usr/local/bin/meg
 ```
 
 Then use it from anywhere:
 
 ```bash
-carburetor deploy
+meg 
 ```
 
 #### For all platforms (distribution)
@@ -81,11 +81,11 @@ Produces binaries for every platform under `dist/`:
 
 ```
 dist/
-  macos-arm64/carburetor
-  macos-x64/carburetor
-  linux-arm64/carburetor
-  linux-x64/carburetor
-  windows-x64/carburetor.exe
+  macos-arm64/meg
+  macos-x64/meg
+  linux-arm64/meg
+  linux-x64/meg
+  windows-x64/meg.exe
 ```
 
 macOS binaries are automatically ad-hoc signed so Gatekeeper doesn't block them. Linux and Windows binaries require no signing. Ship the folder matching the customer's platform.
@@ -109,7 +109,7 @@ bun run build:all
 The version is read directly from `package.json` at build time — no other files need updating. Verify with:
 
 ```bash
-./dist/macos-arm64/carburetor --version
+./dist/macos-arm64/meg --version
 ```
 
 ---
@@ -119,10 +119,10 @@ The version is read directly from `package.json` at build time — no other file
 Copy the example config and fill in your values:
 
 ```bash
-cp carburetor.example.yml carburetor.yml
+cp megalodon.example.yml megalodon.yml
 ```
 
-`carburetor.yml`:
+`megalodon.yml`:
 
 ```yaml
 project:
@@ -146,7 +146,7 @@ executor:
   type: local                      # local | jenkins
 ```
 
-> **Credentials are never stored in `carburetor.yml`.** Set them as environment variables (see below).
+> **Credentials are never stored in `megalodon.yml`.** Set them as environment variables (see below).
 
 ---
 
@@ -155,7 +155,7 @@ executor:
 ### GitHub / GitLab
 
 ```bash
-export carburetor_VCS_TOKEN=ghp_your_token_here
+export megalodon_VCS_TOKEN=ghp_your_token_here
 ```
 
 ### AWS
@@ -188,13 +188,13 @@ export AZURE_SUBSCRIPTION_ID=...
 ### Deploy
 
 ```bash
-carburetor deploy
+meg 
 ```
 
 Options:
 
 ```
--c, --config <path>       Path to carburetor.yml (default: ./carburetor.yml)
+-c, --config <path>       Path to megalodon.yml (default: ./megalodon.yml)
 -i, --interactive         Launch interactive setup wizard (no config file needed)
 -t, --target <platform>   Override target platform (aws|gcp|azure|lambda)
 -e, --env <name>          Override environment name
@@ -207,38 +207,38 @@ Examples:
 
 ```bash
 # Deploy using default config
-carburetor deploy
+meg 
 
-# Interactive wizard — no carburetor.yml needed
-carburetor deploy --interactive
-
-# Interactive wizard + dry-run (validate credentials without deploying)
-carburetor deploy --interactive --dry-run
-
-# Interactive wizard — no carburetor.yml needed
-carburetor deploy --interactive
+# Interactive wizard — no megalodon.yml needed
+meg  --interactive
 
 # Interactive wizard + dry-run (validate credentials without deploying)
-carburetor deploy --interactive --dry-run
+meg  --interactive --dry-run
+
+# Interactive wizard — no megalodon.yml needed
+meg  --interactive
+
+# Interactive wizard + dry-run (validate credentials without deploying)
+meg  --interactive --dry-run
 
 # Override platform at runtime
-carburetor deploy --target lambda
+meg  --target lambda
 
 # Validate only — no deploy
-carburetor deploy --dry-run
+meg  --dry-run
 
 # Use a custom config path
-carburetor deploy --config ./config/prod.yml
+meg  --config ./config/prod.yml
 
 # JSON output for CI pipelines
-carburetor deploy --json
+meg  --json
 ```
 
 ### Docker EC2 Deployment
 
-Deploy a single Docker image directly to an EC2 instance — no VCS token required. You point carburetor at a Dockerfile; it ships the file to EC2, builds the image there, and starts the container on port 80.
+Deploy a single Docker image directly to an EC2 instance — no VCS token required. You point megalodon at a Dockerfile; it ships the file to EC2, builds the image there, and starts the container on port 80.
 
-**Pipeline** (runs on every `carburetor deploy` invocation):
+**Pipeline** (runs on every `meg deploy` invocation):
 
 ```
 Copy Dockerfile locally → Transfer to EC2 → Install Docker (if absent) → Build image on EC2 → Free port 80 → Start container
@@ -248,7 +248,7 @@ Re-running the command always gets the latest code (build runs with `--no-cache`
 
 #### 1. Write your Dockerfile
 
-All git cloning and build logic lives inside your Dockerfile — carburetor just ships it. A typical React app Dockerfile looks like:
+All git cloning and build logic lives inside your Dockerfile — megalodon just ships it. A typical React app Dockerfile looks like:
 
 ```dockerfile
 FROM node:20-alpine AS builder
@@ -265,7 +265,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-#### 2. Configure `carburetor.yml`
+#### 2. Configure `megalodon.yml`
 
 Only the `target` section is required — no `vcs` section needed for Docker deployments:
 
@@ -287,24 +287,24 @@ target:
 ```bash
 export AWS_ACCESS_KEY_ID=AKIA...
 export AWS_SECRET_ACCESS_KEY=...
-export carburetor_EC2_SSH_KEY_PATH=/path/to/your-key.pem
-export carburetor_EC2_SSH_USER=ec2-user       # default; omit if using ec2-user
+export megalodon_EC2_SSH_KEY_PATH=/path/to/your-key.pem
+export megalodon_EC2_SSH_USER=ec2-user       # default; omit if using ec2-user
 ```
 
 #### 4. Deploy
 
 ```bash
 # From config file
-carburetor deploy
+meg 
 
 # Or pass the Dockerfile path directly (no project.type needed in config)
-carburetor deploy --dockerfile ./Dockerfile
+meg  --dockerfile ./Dockerfile
 
 # Using the included React sample
-carburetor deploy --dockerfile ./examples/react-app/Dockerfile
+meg  --dockerfile ./examples/react-app/Dockerfile
 
 # Dry-run — validate credentials without deploying
-carburetor deploy --dockerfile ./Dockerfile --dry-run
+meg  --dockerfile ./Dockerfile --dry-run
 ```
 
 New flag:
@@ -360,18 +360,18 @@ CMD ["nginx", "-g", "daemon off;"]
 Deploy it to EC2 with one command:
 
 ```bash
-carburetor deploy --dockerfile ./examples/react-app/Dockerfile
+meg  --dockerfile ./examples/react-app/Dockerfile
 ```
 
 ---
 
 ### Interactive Wizard (`--interactive`)
 
-The wizard guides you through every deployment decision step by step — no `carburetor.yml` required.
+The wizard guides you through every deployment decision step by step — no `megalodon.yml` required.
 Run it when deploying to a new environment for the first time or for ad-hoc deployments.
 
 ```
-┌  carburetor — Interactive Deployment Wizard
+┌  megalodon — Interactive Deployment Wizard
 │
 ◆  What type of project are you deploying?
 │  ● React App  ○ Other (experimental)
@@ -410,7 +410,7 @@ Run it when deploying to a new environment for the first time or for ad-hoc depl
 Check that your VCS and cloud credentials are valid before deploying:
 
 ```bash
-carburetor validate
+meg 
 ```
 
 ```
@@ -424,7 +424,7 @@ Validating credentials...
 ### Print version
 
 ```bash
-carburetor version
+meg 
 ```
 
 ---
@@ -447,7 +447,7 @@ carburetor version
 3. **Transfer** — SCPs the Dockerfile to the EC2 instance
 4. **Install** — installs Docker on EC2 if not already present (idempotent)
 5. **Build** — runs `docker build --no-cache` on EC2; your Dockerfile handles all git cloning and compilation
-6. **Free** — stops nginx and removes any existing `carburetor-app` container to clear port 80
+6. **Free** — stops nginx and removes any existing `megalodon-app` container to clear port 80
 7. **Start** — starts the new container on port 80
 8. **Report** — prints the accessible EC2 endpoint
 
@@ -570,6 +570,6 @@ src/
     executors/    LocalPipelineExecutor, JenkinsPipelineExecutor
   access/         VCSAccess, CSPAccess — external resource adapters
   models/         TypeScript types and enums
-  config/         ConfigLoader — reads and validates carburetor.yml
+  config/         ConfigLoader — reads and validates megalodon.yml
   index.ts        Dependency injection wiring and entry point
 ```

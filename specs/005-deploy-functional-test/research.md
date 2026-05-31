@@ -13,9 +13,9 @@
 
 ---
 
-## Decision 2: Config Source — Root `carburetor.yml`
+## Decision 2: Config Source — Root `megalodon.yml`
 
-**Decision**: Hardcode the path to `carburetor.yml` at the repo root.  
+**Decision**: Hardcode the path to `megalodon.yml` at the repo root.  
 **Rationale**: The test validates the actual deployment configuration the developer uses. Using a copy/fixture would test a different config and miss integration issues. Hardcoding the path is intentional — this test is tied to the repo's real setup.  
 **Alternatives considered**: A fixture YAML in `tests/fixtures/` — rejected because it would not validate the real config.
 

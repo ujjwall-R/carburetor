@@ -1,6 +1,6 @@
 node_modules/
 dist/
-carburetor
+meg
 *.log
 .env
 .env.*
@@ -9,9 +9,9 @@ carburetor
 .DS_Store
 *.tmp
 *.swp
-/tmp/carburetor-*/
-carburetor.yml
+/tmp/megalodon-*/
+megalodon.yml
 coverage/
 *.pem
-carburetor_docker.yml
+megalodon_docker.yml
 examples/*/Dockerfile

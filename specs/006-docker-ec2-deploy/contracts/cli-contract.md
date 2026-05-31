@@ -1,7 +1,7 @@
 # CLI Contract: Docker EC2 Deploy
 
 **Feature**: `006-docker-ec2-deploy`  
-**Command**: `carburetor deploy`  
+**Command**: "`meg deploy`"  
 **Date**: 2026-04-18
 
 ---
@@ -19,24 +19,24 @@ Both flags are optional at the parser level. If `--dockerfile` is set but `--por
 
 ## Invocation Examples
 
-**Minimal Docker deploy** (EC2 target configured in `carburetor.yml`):
+**Minimal Docker deploy** (EC2 target configured in `megalodon.yml`):
 ```
-carburetor deploy --dockerfile ./Dockerfile --port 3000
+meg deploy --dockerfile ./Dockerfile --port 3000
 ```
 
 **Docker deploy with explicit config file**:
 ```
-carburetor deploy -c ./my-carburetor.yml --dockerfile ./services/api/Dockerfile --port 8080
+meg deploy -c ./my-megalodon.yml --dockerfile ./services/api/Dockerfile --port 8080
 ```
 
 **Dry run**:
 ```
-carburetor deploy --dockerfile ./Dockerfile --port 3000 --dry-run
+meg deploy --dockerfile ./Dockerfile --port 3000 --dry-run
 ```
 
 ---
 
-## Config File (`carburetor.yml`) — Docker Fields
+## Config File (`megalodon.yml`) — Docker Fields
 
 Alternatively, Dockerfile path and port can be specified in the config file instead of CLI flags. CLI flags take precedence over config file values.
 
@@ -58,7 +58,7 @@ target:
 
 ---
 
-## Required `carburetor.yml` Fields for Docker EC2 Deploy
+## Required `megalodon.yml` Fields for Docker EC2 Deploy
 
 | Field | Description |
 |-------|-------------|
@@ -74,13 +74,13 @@ target:
 
 | Variable | Description |
 |----------|-------------|
-| `carburetor_AWS_ACCESS_KEY_ID` | AWS access key for EC2 instance lookup |
-| `carburetor_AWS_SECRET_ACCESS_KEY` | AWS secret key |
-| `carburetor_EC2_SSH_KEY` | PEM key content (inline), **OR** |
-| `carburetor_EC2_SSH_KEY_PATH` | Path to PEM key file (one of the two SSH key vars is required) |
-| `carburetor_EC2_SSH_USER` | SSH username (default: `ec2-user`) |
+| `megalodon_AWS_ACCESS_KEY_ID` | AWS access key for EC2 instance lookup |
+| `megalodon_AWS_SECRET_ACCESS_KEY` | AWS secret key |
+| `megalodon_EC2_SSH_KEY` | PEM key content (inline), **OR** |
+| `megalodon_EC2_SSH_KEY_PATH` | Path to PEM key file (one of the two SSH key vars is required) |
+| `megalodon_EC2_SSH_USER` | SSH username (default: `ec2-user`) |
 
-VCS environment variables (`carburetor_VCS_TOKEN`, etc.) are **not required** for Docker deployments.
+VCS environment variables (`megalodon_VCS_TOKEN`, etc.) are **not required** for Docker deployments.
 
 ---
 
@@ -97,9 +97,9 @@ VCS environment variables (`carburetor_VCS_TOKEN`, etc.) are **not required** fo
 ## Output (default human-readable)
 
 ```
-→ [Build Docker image] $ docker build -t carburetor-docker-image -f /abs/Dockerfile /abs/context
+→ [Build Docker image] $ docker build -t megalodon-docker-image -f /abs/Dockerfile /abs/context
 ✓ Build Docker image (12340ms)
-→ [Export image to archive] $ docker save carburetor-docker-image | gzip > artifact.tar.gz
+→ [Export image to archive] $ docker save megalodon-docker-image | gzip > artifact.tar.gz
 ✓ Export image to archive (3210ms)
 
 ✓ Deployed successfully

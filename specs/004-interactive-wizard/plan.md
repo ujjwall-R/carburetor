@@ -4,7 +4,7 @@
 
 ## Summary
 
-Add `--interactive` flag to `carburetor deploy`. When present, a `WizardSession` in the Client layer prompts the user through project type, VCS, cloud platform, service, and all credentials step-by-step using `@clack/prompts`. The wizard assembles a `DeploymentRequest` and hands it to `IDeploymentManager.deploy` (or `.validate` for dry-run). Manager and Engine layers are untouched.
+Add `--interactive` flag to "`meg deploy`". When present, a `WizardSession` in the Client layer prompts the user through project type, VCS, cloud platform, service, and all credentials step-by-step using `@clack/prompts`. The wizard assembles a `DeploymentRequest` and hands it to `IDeploymentManager.deploy` (or `.validate` for dry-run). Manager and Engine layers are untouched.
 
 ## Technical Context
 
@@ -147,7 +147,7 @@ interface CLIArgs {
 **c) Branch at the top of `runDeploy`**:
 ```typescript
 if (args.interactive) {
-  if (args.config !== './carburetor.yml') {
+  if (args.config !== './meg.yml') {
     process.stderr.write('Warning: --interactive ignored when --config is provided. Using config file.\n');
   } else {
     const { WizardSession } = await import('./wizard/WizardSession.js');
@@ -182,7 +182,7 @@ Mock `@clack/prompts` module to return predetermined values. Test:
 - [ ] `grep -r "IShippingEngine\|IOrchestratingEngine\|ShippingEngine\|OrchestratingEngine" src/client/` returns zero results
 - [ ] `git diff --name-only HEAD | grep -E "src/(managers|engines|access)/"` returns zero files
 - [ ] `bun test` passes (all existing + new tests)
-- [ ] `carburetor deploy --interactive` starts wizard without `carburetor.yml` present
-- [ ] `carburetor deploy --interactive --dry-run` runs wizard then validation only
-- [ ] `carburetor deploy --interactive --config ./carburetor.yml` prints warning and uses file
+- [ ] "`meg deploy --interactive`" starts wizard without `megalodon.yml` present
+- [ ] "`meg deploy --interactive --dry-run`" runs wizard then validation only
+- [ ] "`meg deploy --interactive --config ./meg.yml`" prints warning and uses file
 - [ ] Ctrl-C mid-wizard exits with code 1 and "Wizard cancelled." message

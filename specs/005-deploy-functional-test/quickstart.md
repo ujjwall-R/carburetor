@@ -7,15 +7,15 @@
 
 ## Prerequisites
 
-1. `carburetor.yml` at repo root with a valid React app target
+1. `megalodon.yml` at repo root with a valid React app target
 2. `.env` at repo root with real credentials (never commit this)
 
 Minimum `.env` for an AWS EC2 target:
 ```
-carburetor_VCS_TOKEN=ghp_...
+megalodon_VCS_TOKEN=ghp_...
 AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
-carburetor_EC2_SSH_KEY_PATH=~/.ssh/your-key.pem
+megalodon_EC2_SSH_KEY_PATH=~/.ssh/your-key.pem
 ```
 
 ---

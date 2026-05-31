@@ -7,7 +7,7 @@
 
 ## No new CLI flags
 
-The `carburetor deploy` command flags are unchanged. The `--dockerfile` flag (added in spec 006) continues to work with `carburetor.yml` exactly as before.
+The "`meg deploy`" command flags are unchanged. The `--dockerfile` flag (added in spec 006) continues to work with `megalodon.yml` exactly as before.
 
 The change is entirely within the `--interactive` mode wizard flow.
 
@@ -15,7 +15,7 @@ The change is entirely within the `--interactive` mode wizard flow.
 
 ## Interactive Wizard — Docker Project Type (new)
 
-When `carburetor deploy --interactive` is used and the user selects **Docker Container**, the wizard collects:
+When "`meg deploy --interactive`" is used and the user selects **Docker Container**, the wizard collects:
 
 1. Dockerfile path (validated: file must exist on disk)
 2. Cloud platform (AWS)
@@ -45,7 +45,7 @@ The `Deploy directory` prompt is **removed** from the React App wizard path.
 ## Example wizard session (Docker)
 
 ```
-  carburetor — Interactive Deployment Wizard
+  megalodon — Interactive Deployment Wizard
 
 ? What type of project are you deploying? › Docker Container
 ? Dockerfile path (e.g. ./Dockerfile) › ./Dockerfile

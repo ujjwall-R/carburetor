@@ -7,7 +7,7 @@
 
 ## No model changes required
 
-`BuildConfig`, `CSPCredentials`, `DeploymentRequest`, and all enums are unchanged. The Docker wizard assembles the existing `DeploymentRequest` shape with `project.type = ProjectType.Docker` and `buildConfig.dockerfilePath` set — exactly as `runDockerDeploy` in `DeployCLI` already does when reading from `carburetor.yml`.
+`BuildConfig`, `CSPCredentials`, `DeploymentRequest`, and all enums are unchanged. The Docker wizard assembles the existing `DeploymentRequest` shape with `project.type = ProjectType.Docker` and `buildConfig.dockerfilePath` set — exactly as `runDockerDeploy` in `DeployCLI` already does when reading from `megalodon.yml`.
 
 ---
 

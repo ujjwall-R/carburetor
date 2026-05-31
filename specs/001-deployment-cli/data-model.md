@@ -259,10 +259,10 @@ interface ValidationResult {
 
 ---
 
-## Configuration File Schema (`carburetor.yml`)
+## Configuration File Schema (`megalodon.yml`)
 
 ```yaml
-# carburetor.yml — lives at project root
+# megalodon.yml — lives at project root
 
 project:
   type: react                  # react | node | docker | custom
@@ -284,14 +284,14 @@ vcs:
   branch: main
 ```
 
-Credentials are **never** stored in `carburetor.yml`. They are sourced from environment variables at runtime:
+Credentials are **never** stored in `megalodon.yml`. They are sourced from environment variables at runtime:
 
 | Platform | Environment Variables |
 |----------|-----------------------|
 | AWS | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` |
 | GCP | `GOOGLE_APPLICATION_CREDENTIALS` (path to key file) |
 | Azure | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` |
-| GitHub | `carburetor_VCS_TOKEN` |
+| GitHub | `megalodon_VCS_TOKEN` |
 
 ---
 

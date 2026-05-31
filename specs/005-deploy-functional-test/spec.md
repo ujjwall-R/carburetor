@@ -9,15 +9,15 @@
 
 ### User Story 1 - Real End-to-End Deployment via Root YAML Config (Priority: P1)
 
-A developer runs the functional test suite against the actual `carburetor.yml` in the repo root. The test loads the config, reads real credentials from the root `.env` (which Bun loads automatically), and drives the full deployment stack — VCS fetch, build, package, ship — against real infrastructure. The test passes only if the app is live.
+A developer runs the functional test suite against the actual `megalodon.yml` in the repo root. The test loads the config, reads real credentials from the root `.env` (which Bun loads automatically), and drives the full deployment stack — VCS fetch, build, package, ship — against real infrastructure. The test passes only if the app is live.
 
 **Why this priority**: This is the only scenario. The point of the test is to validate that the entire deployment pipeline works for a real React app on real infrastructure. There is no value in a watered-down version.
 
-**Independent Test**: Run `bun test tests/functional/` with valid credentials in `.env` and a reachable target in `carburetor.yml`.
+**Independent Test**: Run `bun test tests/functional/` with valid credentials in `.env` and a reachable target in `megalodon.yml`.
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid `carburetor.yml` at the repo root and a `.env` with real credentials, **When** the functional test runs, **Then** the deployment completes and `outcome.status` is `Completed`.
+1. **Given** a valid `megalodon.yml` at the repo root and a `.env` with real credentials, **When** the functional test runs, **Then** the deployment completes and `outcome.status` is `Completed`.
 
 ---
 
@@ -32,7 +32,7 @@ A developer runs the functional test suite against the actual `carburetor.yml` i
 
 ### Functional Requirements
 
-- **FR-001**: The functional test MUST use the real `carburetor.yml` from the repo root — no fixture copy.
+- **FR-001**: The functional test MUST use the real `megalodon.yml` from the repo root — no fixture copy.
 - **FR-002**: The functional test MUST use the real production stack with no mocks or stubs: `ConfigLoader`, `OrchestratingEngine`, `ShippingEngine`, `LocalPipelineExecutor`, `VCSAccess`, `CSPAccess`.
 - **FR-003**: Credentials MUST be sourced from the root `.env` file, loaded automatically by Bun at test startup — no helper code required.
 - **FR-004**: The test MUST assert `outcome.status === ExecutionStatus.Completed`.
@@ -40,7 +40,7 @@ A developer runs the functional test suite against the actual `carburetor.yml` i
 
 ### Key Entities
 
-- **`carburetor.yml`** (repo root): The real deployment config used in production and in the test.
+- **`megalodon.yml`** (repo root): The real deployment config used in production and in the test.
 - **`.env`** (repo root): Real credentials loaded automatically by Bun. Never committed.
 - **`tests/functional/deploy-yml-react.test.ts`**: The single functional test file.
 
@@ -59,5 +59,5 @@ A developer runs the functional test suite against the actual `carburetor.yml` i
 ## Assumptions
 
 - The developer has a valid `.env` at the repo root with all credentials required by the configured cloud platform.
-- `carburetor.yml` points to a reachable React app repo and a live cloud target.
+- `megalodon.yml` points to a reachable React app repo and a live cloud target.
 - The test is not run in CI without credentials — it is a developer-run integration test.

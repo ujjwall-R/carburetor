@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
-# Install script for carburetor.
+# Install script for megalodon.
 # Upload this file as a GitHub Release asset alongside the binaries so users can run:
-#   curl -fsSL https://github.com/ujjwall-R/carburetor/releases/latest/download/install.sh | sh
+#   curl -fsSL https://github.com/ujjwall-R/megalodon/releases/latest/download/install.sh | sh
 set -e
 
-REPO="ujjwall-R/carburetor"
-BINARY="carburetor"
+REPO="ujjwall-R/megalodon"
+BINARY="meg"
 INSTALL_DIR="/usr/local/bin"
 
 # ── Colour helpers ─────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ latest_version() {
 # ── Main ───────────────────────────────────────────────────────────────────────
 main() {
   bold ""
-  bold "  carburetor installer"
+  bold "  meg installer"
   dim  "  https://github.com/${REPO}"
   bold ""
 
@@ -106,13 +106,13 @@ main() {
     exit 1
   fi
 
-  green "  carburetor ${VERSION} installed successfully."
+  green "  meg ${VERSION} installed successfully."
   printf "\n"
   dim  "  Run the interactive wizard:"
-  bold "    carburetor deploy --interactive"
+  bold "    meg deploy --interactive"
   printf "\n"
   dim  "  Or use directly in CI/scripts:"
-  bold "    carburetor deploy"
+  bold "    meg deploy"
   printf "\n"
 }
 

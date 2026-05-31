@@ -37,19 +37,19 @@
 
 ## Phase 3: User Story 1 - Deploy Application from Dockerfile (Priority: P1) 🎯 MVP
 
-**Goal**: A developer can run `carburetor deploy --dockerfile ./Dockerfile` against a configured EC2 instance and have the container running on EC2 at port 80.
+**Goal**: A developer can run "`meg deploy --dockerfile ./Dockerfile`" against a configured EC2 instance and have the container running on EC2 at port 80.
 
-**Independent Test**: Run `carburetor deploy --dockerfile <path>` with a real EC2 instance (or dry-run without an instance). Verify: (a) Dockerfile is copied locally as `artifact.tar.gz`, (b) SCP transfers it to EC2, (c) SSH steps install Docker, build the image on EC2, free port 80, and start the container.
+**Independent Test**: Run "`meg deploy --dockerfile <path>`" with a real EC2 instance (or dry-run without an instance). Verify: (a) Dockerfile is copied locally as `artifact.tar.gz`, (b) SCP transfers it to EC2, (c) SSH steps install Docker, build the image on EC2, free port 80, and start the container.
 
 ### Implementation for User Story 1
 
 - [x] T006 [US1] Add Docker validation at the start of `ShippingEngine.run` in `src/engines/ShippingEngine.ts`: when `pipeline.projectType === ProjectType.Docker`, verify `buildConfig.dockerfilePath` is set and the file exists (`existsSync`); return a `Failed` `ShippingResult` immediately if the check fails (depends on T001, T004)
-- [x] T007 [US1] Add VCS bypass in `ShippingEngine.run` in `src/engines/ShippingEngine.ts`: when project type is Docker, skip `fetchSource` and instead create an empty temp dir with `mkdtempSync(join(tmpdir(), 'carburetor-src-'))` as `source.localPath`; set `metadata.commitSha` to `'local'` (depends on T006)
+- [x] T007 [US1] Add VCS bypass in `ShippingEngine.run` in `src/engines/ShippingEngine.ts`: when project type is Docker, skip `fetchSource` and instead create an empty temp dir with `mkdtempSync(join(tmpdir(), 'megalodon-src-'))` as `source.localPath`; set `metadata.commitSha` to `'local'` (depends on T006)
 - [x] T008 [US1] Skip VCS credential validation in `ShippingEngine.validateCredentials` in `src/engines/ShippingEngine.ts` when `request.project.type === ProjectType.Docker` (depends on T001)
 - [x] T009 [US1] Add `--dockerfile <path>` option to the `deploy` command in `src/client/DeployCLI.ts`; extend `CLIArgs` with `dockerfile?: string`; when `--dockerfile` is present: resolve to absolute path, set `project.type = ProjectType.Docker`, populate `buildConfig.dockerfilePath` on the constructed `DeploymentRequest`; no `--port` flag — container always binds port 80 (depends on T001, T002, T003)
 - [x] T010 [US1] Skip VCS credential resolution in `DeployCLI.runDeploy` in `src/client/DeployCLI.ts` when `--dockerfile` is set (or `project.type === 'docker'` from config); pass empty `vcsCredentials` (`{ token: '' }`) and empty `vcsConfig` stubs so `DeploymentRequest` shape is preserved (depends on T009)
 
-**Checkpoint**: `carburetor deploy --dockerfile ./Dockerfile` runs the full pipeline: copy Dockerfile → SCP to EC2 → install Docker → build image on EC2 (`--no-cache`) → free port 80 → start container → prints endpoint. User Story 1 is fully functional.
+**Checkpoint**: "`meg deploy --dockerfile ./Dockerfile`" runs the full pipeline: copy Dockerfile → SCP to EC2 → install Docker → build image on EC2 (`--no-cache`) → free port 80 → start container → prints endpoint. User Story 1 is fully functional.
 
 ---
 
@@ -69,14 +69,14 @@
 
 ## Phase 5: User Story 3 - Redeploy Over an Existing Container (Priority: P3)
 
-**Goal**: Re-running `carburetor deploy` against the same EC2 instance replaces the running container without error.
+**Goal**: Re-running "`meg deploy`" against the same EC2 instance replaces the running container without error.
 
-**Independent Test**: Run the deploy command twice against the same EC2 instance. Second run must complete without error. Verify via `docker ps` on EC2 that only one `carburetor-app` container is running.
+**Independent Test**: Run the deploy command twice against the same EC2 instance. Second run must complete without error. Verify via `docker ps` on EC2 that only one `megalodon-app` container is running.
 
-**Implementation note**: The `docker-stop` Ship step stops nginx and force-removes the existing `carburetor-app` container before starting the new one. The `|| true` guard makes the step safe on first deploy (nothing to stop). This phase validates that successive deploys work cleanly.
+**Implementation note**: The `docker-stop` Ship step stops nginx and force-removes the existing `megalodon-app` container before starting the new one. The `|| true` guard makes the step safe on first deploy (nothing to stop). This phase validates that successive deploys work cleanly.
 
 - [x] T012 [US3] Verify `DockerOrchestration.buildSteps` in `src/engines/orchestrations/DockerOrchestration.ts` places `docker-stop` (StepType.Ship) before `docker-run` (StepType.Ship), that the stop step includes `systemctl stop nginx` to free port 80, and that the command ends with `|| true`; update the step if the order or guard is wrong (depends on T004)
-- [x] T013 [US3] Update `carburetor.example.yml` to include a Docker deployment example showing `project.type: docker` and `project.build.dockerfilePath` with a comment explaining redeployment is automatic and always serves on port 80
+- [x] T013 [US3] Update `megalodon.example.yml` to include a Docker deployment example showing `project.type: docker` and `project.build.dockerfilePath` with a comment explaining redeployment is automatic and always serves on port 80
 
 **Checkpoint**: Two successive deploys to the same EC2 instance replace the container cleanly. User Story 3 is validated.
 
@@ -147,7 +147,7 @@ Task T005: "Wire Docker type in src/engines/OrchestratingEngine.ts"
 1. Complete Phase 1: Model + config (T001–T003)
 2. Complete Phase 2: DockerOrchestration + wiring (T004–T005)
 3. Complete Phase 3: ShippingEngine + CLI (T006–T010)
-4. **STOP and VALIDATE**: `carburetor deploy --dockerfile ./Dockerfile --port 3000` deploys a running container to EC2
+4. **STOP and VALIDATE**: "`meg deploy --dockerfile ./Dockerfile --port 3000`" deploys a running container to EC2
 5. Ship MVP
 
 ### Incremental Delivery
@@ -165,5 +165,5 @@ Task T005: "Wire Docker type in src/engines/OrchestratingEngine.ts"
 - [P] tasks = different files, no shared dependencies — safe to implement concurrently
 - No new runtime dependencies — Docker CLI invoked via existing `spawn` pattern
 - `artifact.tar.gz` is always written to a temp `sourceDir`, never to the user's project directory
-- VCS config (`carburetor_VCS_TOKEN`) is not needed or checked for Docker deployments
-- Container name `carburetor-app` and image name `carburetor-docker-image` are fixed in this MVP
+- VCS config (`megalodon_VCS_TOKEN`) is not needed or checked for Docker deployments
+- Container name `megalodon-app` and image name `megalodon-docker-image` are fixed in this MVP

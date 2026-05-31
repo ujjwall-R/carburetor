@@ -4,7 +4,7 @@
 
 ## Summary
 
-Add a single functional test that runs the full deployment pipeline against real infrastructure using the repo's root `carburetor.yml` and `.env`. No production code changes. No fixtures or test helpers needed — Bun loads `.env` automatically.
+Add a single functional test that runs the full deployment pipeline against real infrastructure using the repo's root `megalodon.yml` and `.env`. No production code changes. No fixtures or test helpers needed — Bun loads `.env` automatically.
 
 ## Technical Context
 
@@ -47,7 +47,7 @@ tests/
   functional/
     deploy-yml-react.test.ts   ← NEW: one functional test
 
-carburetor.yml                 ← existing (used as-is, not modified)
+megalodon.yml                 ← existing (used as-is, not modified)
 .env                           ← existing (loaded by Bun automatically)
 ```
 

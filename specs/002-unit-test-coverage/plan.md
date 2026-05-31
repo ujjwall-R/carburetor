@@ -7,7 +7,7 @@
 
 ## Summary
 
-Write a complete unit test suite for the Manager and Engine layers of the carburetor deployment CLI. Tests use Bun's built-in test runner (`bun test`) with `bun:test` mocking — no additional test packages required. Coverage is measured via `bun test --coverage` (V8-based), configured in `bunfig.toml`, with a shell script enforcing per-layer thresholds. Tests are organized to mirror the source tree under `tests/unit/`.
+Write a complete unit test suite for the Manager and Engine layers of the megalodon deployment CLI. Tests use Bun's built-in test runner (`bun test`) with `bun:test` mocking — no additional test packages required. Coverage is measured via `bun test --coverage` (V8-based), configured in `bunfig.toml`, with a shell script enforcing per-layer thresholds. Tests are organized to mirror the source tree under `tests/unit/`.
 
 ---
 
@@ -133,7 +133,7 @@ Exports factory functions that return fresh mock instances. Each factory creates
 
 **`makeVCSAccessMock()`** → `IVCSAccess`:
 - `validateCredentials` → resolves `true` by default
-- `fetchSource` → resolves `{ localPath: '/tmp/carburetor-src-test', metadata: {} }`
+- `fetchSource` → resolves `{ localPath: '/tmp/megalodon-src-test', metadata: {} }`
 
 **`makeCSPAccessMock()`** → `ICSPAccess`:
 - `validateCredentials` → resolves `true`

@@ -1,4 +1,4 @@
-# carburetor.yml — copy this to carburetor.yml and fill in your values
+# megalodon.yml — copy this to megalodon.yml and fill in your values
 # Credentials are NEVER stored here — set them as environment variables
 
 project:
@@ -24,7 +24,7 @@ executor:
   type: local                      # local | jenkins | temporal
   # jenkins:
   #   baseUrl: "https://jenkins.example.com"
-  #   jobName: "carburetor-deploy"
+  #   jobName: "megalodon-deploy"
   #   token: "${JENKINS_API_TOKEN}"
   #   waitForCompletion: true
   #   pollIntervalMs: 10000
@@ -32,10 +32,10 @@ executor:
 # ── Docker EC2 deploy example ─────────────────────────────────────────────────
 # Use this config (with no vcs section) to deploy a single Docker image to EC2.
 # Required env vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
-#   carburetor_EC2_SSH_KEY or carburetor_EC2_SSH_KEY_PATH, carburetor_EC2_SSH_USER
+#   megalodon_EC2_SSH_KEY or megalodon_EC2_SSH_KEY_PATH, megalodon_EC2_SSH_USER
 #
-# Run:   carburetor deploy --dockerfile ./Dockerfile --port 3000
-# Or:    carburetor deploy   (when dockerfilePath is set in this file)
+# Run:   megalodon deploy --dockerfile ./Dockerfile --port 3000
+# Or:    megalodon deploy   (when dockerfilePath is set in this file)
 #
 # Redeployment is automatic — the running container is replaced on every deploy.
 #

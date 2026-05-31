@@ -5,7 +5,7 @@ import { StepType } from '../../../src/models/enums.js';
 
 describe('DockerOrchestration', () => {
   const orchestration = new DockerOrchestration();
-  const buildConfig = { dockerfilePath: '/project/Dockerfile' };
+  const buildConfig = { dockerfilePath: '/project/Dockerfile', containerPort: 80 };
 
   it('produces exactly 5 steps', () => {
     const steps = orchestration.buildSteps(buildConfig);
@@ -56,14 +56,14 @@ describe('DockerOrchestration', () => {
     const steps = orchestration.buildSteps(buildConfig);
     expect(steps[2]?.command).toContain('docker build');
     expect(steps[2]?.command).toContain('--no-cache');
-    expect(steps[2]?.command).toContain('-f /tmp/carburetor-artifact.tar.gz');
-    expect(steps[2]?.command).toContain('carburetor-docker-image');
+    expect(steps[2]?.command).toContain('-f /tmp/megalodon-artifact.tar.gz');
+    expect(steps[2]?.command).toContain('megalodon-docker-image');
   });
 
   it('stop step frees port 80 and removes old container, ends with || true', () => {
     const steps = orchestration.buildSteps(buildConfig);
     expect(steps[3]?.command).toContain('systemctl stop nginx');
-    expect(steps[3]?.command).toContain('docker rm -f carburetor-app');
+    expect(steps[3]?.command).toContain('docker rm -f megalodon-app');
     expect(steps[3]?.command).toMatch(/\|\| true$/);
   });
 
@@ -79,13 +79,13 @@ describe('DockerOrchestration', () => {
     expect(steps[4]?.command).toContain('-p 80:80');
   });
 
-  it('run step names the container carburetor-app', () => {
+  it('run step names the container megalodon-app', () => {
     const steps = orchestration.buildSteps(buildConfig);
-    expect(steps[4]?.command).toContain('--name carburetor-app');
+    expect(steps[4]?.command).toContain('--name megalodon-app');
   });
 
-  it('run step uses the fixed image name carburetor-docker-image', () => {
+  it('run step uses the fixed image name megalodon-docker-image', () => {
     const steps = orchestration.buildSteps(buildConfig);
-    expect(steps[4]?.command).toContain('carburetor-docker-image');
+    expect(steps[4]?.command).toContain('megalodon-docker-image');
   });
 });

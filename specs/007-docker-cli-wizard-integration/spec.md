@@ -11,9 +11,9 @@
 
 A developer runs the tool in interactive mode and wants to deploy a Docker-based single-container application. The wizard presents Docker as a project type option and collects the required information: Dockerfile path, EC2 instance ID, AWS credentials, and SSH key details. No VCS credentials or deploy directory is requested for Docker projects.
 
-**Why this priority**: The interactive wizard is the guided entry point for users. Docker single-container deployment already works via `carburetor.yml`; exposing it through the wizard closes the gap so users can deploy Docker containers without writing a config file.
+**Why this priority**: The interactive wizard is the guided entry point for users. Docker single-container deployment already works via `megalodon.yml`; exposing it through the wizard closes the gap so users can deploy Docker containers without writing a config file.
 
-**Independent Test**: Can be tested by running `carburetor deploy --interactive`, selecting Docker as the project type, providing a Dockerfile path and EC2/AWS connection details, and verifying that the deployment proceeds without asking for VCS credentials or deploy directory.
+**Independent Test**: Can be tested by running "`meg deploy --interactive`", selecting Docker as the project type, providing a Dockerfile path and EC2/AWS connection details, and verifying that the deployment proceeds without asking for VCS credentials or deploy directory.
 
 **Acceptance Scenarios**:
 
@@ -30,7 +30,7 @@ A developer runs the tool in interactive mode to deploy a React application. The
 
 **Why this priority**: The deploy directory prompt adds friction without value for React app deployments. The default is the correct answer for virtually every user, and asking for it introduces a source of misconfiguration.
 
-**Independent Test**: Can be tested by running `carburetor deploy --interactive`, selecting React App, completing all prompts, and verifying that no deploy directory question appears and that the resulting deployment targets `/var/www/html`.
+**Independent Test**: Can be tested by running "`meg deploy --interactive`", selecting React App, completing all prompts, and verifying that no deploy directory question appears and that the resulting deployment targets `/var/www/html`.
 
 **Acceptance Scenarios**:
 
@@ -49,12 +49,12 @@ A developer runs the tool in interactive mode to deploy a React application. The
 ### Functional Requirements
 
 - **FR-001**: System MUST add Docker Single Container as a selectable project type in the interactive wizard.
-- **FR-002**: System MUST collect the following in the Docker wizard path: Dockerfile path (with file-existence validation), AWS region, EC2 instance ID, AWS access key ID, AWS secret access key, SSH key (path or inline), and SSH username; system MUST NOT request VCS token or deploy directory for Docker projects.
+- **FR-002**: System MUST collect the following in the Docker wizard path: Dockerfile path (with file-existence validation), AWS region, EC2 instance ID, AWS access key ID, AWS secret access key, SSH key (path or inline), SSH username, and an optional SSL setup (domain + Let's Encrypt email); system MUST NOT request VCS token or deploy directory for Docker projects.
 - **FR-003**: System MUST display a confirmation summary before executing deployment in the Docker wizard path.
 - **FR-004**: System MUST remove the deploy directory prompt from the React app interactive wizard path.
 - **FR-005**: System MUST use `/var/www/html` as the deploy directory for React app wizard sessions.
 - **FR-006**: System MUST validate that the Dockerfile path provided in the wizard exists on disk before assembling the deployment request.
-- **FR-007**: System MUST always bind the Docker container to port 80; no port configuration is exposed to the user.
+- **FR-007**: System MUST bind the Docker container to port 80 by default; no port configuration is exposed to the user via the wizard. When SSL is enabled, ports 80 and 443 are both bound and the Let's Encrypt certificate volume is mounted.
 
 ### Key Entities
 
@@ -65,7 +65,7 @@ A developer runs the tool in interactive mode to deploy a React application. The
 
 ### Measurable Outcomes
 
-- **SC-001**: The Docker interactive wizard path collects all required information in 8 or fewer prompts (project type, Dockerfile path, region, instance ID, AWS keys ×2, SSH key, SSH user) with no VCS-related questions and no port prompt.
+- **SC-001**: The Docker interactive wizard path collects all required information in 11 or fewer prompts (project type, Dockerfile path, cloud platform, service type, region, environment, instance ID, AWS keys ×2, SSH key mode + key, SSH user, SSL confirm, and optionally domain + email) with no VCS-related questions and no port prompt.
 - **SC-002**: The React app interactive wizard path is reduced by exactly one prompt compared to the current implementation (deploy directory removed).
 - **SC-003**: An invalid Dockerfile path is caught and reported inline in the wizard before any deployment begins — no partial pipeline run occurs.
 - **SC-004**: A Docker container deployed via the wizard is reachable on port 80 within 60 seconds of the wizard reporting success.

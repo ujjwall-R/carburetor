@@ -8,12 +8,12 @@
 
 ## Decision 1: Docker Image Naming
 
-**Decision**: Use a fixed, stable image name — `carburetor-docker-image` — on both the local machine and the EC2 instance.
+**Decision**: Use a fixed, stable image name — `megalodon-docker-image` — on both the local machine and the EC2 instance.
 
-**Rationale**: Redeployment requires stopping the existing container and loading the new image. A stable name means the Ship "stop" step can always reference `carburetor-docker-image` without needing state from the previous run. Timestamp-based names create image accumulation and require side-channel state tracking.
+**Rationale**: Redeployment requires stopping the existing container and loading the new image. A stable name means the Ship "stop" step can always reference `megalodon-docker-image` without needing state from the previous run. Timestamp-based names create image accumulation and require side-channel state tracking.
 
 **Alternatives considered**:
-- Timestamped tags (e.g., `carburetor-image:20260418-143022`) — rejected: would require storing the tag somewhere to reference it during container stop; creates image bloat on EC2.
+- Timestamped tags (e.g., `megalodon-image:20260418-143022`) — rejected: would require storing the tag somewhere to reference it during container stop; creates image bloat on EC2.
 - User-supplied image name — rejected for MVP; adds surface area without spec requirement.
 
 ---
@@ -67,7 +67,7 @@
 
 ## Decision 6: Container Management (Redeployment)
 
-**Decision**: The Ship step sequence includes a stop/remove command before running the new container: `docker rm -f carburetor-app 2>/dev/null || true`. The container is always named `carburetor-app`.
+**Decision**: The Ship step sequence includes a stop/remove command before running the new container: `docker rm -f megalodon-app 2>/dev/null || true`. The container is always named `megalodon-app`.
 
 **Rationale**: This matches FR-007 (stop existing container before starting new one). The `|| true` ensures the step doesn't fail when no container is currently running (first deployment). Fixed container name allows the tool to find and stop the previous container without external state.
 
@@ -93,7 +93,7 @@
 
 **Decision**: The local `image.tar.gz` lives in the `artifactDir` temp directory created by `ShippingEngine` using `mkdtempSync`. It is not explicitly deleted — OS temp directory cleanup handles it.
 
-**Rationale**: FR-008 requires cleanup after successful or failed transfer. The `artifactDir` is already a temp dir (prefix `carburetor-artifacts-`). OS-level cleanup of `/tmp` is the standard and reliable mechanism. Explicit `unlink` would require try/finally plumbing through multiple layers — disproportionate for this feature scope.
+**Rationale**: FR-008 requires cleanup after successful or failed transfer. The `artifactDir` is already a temp dir (prefix `megalodon-artifacts-`). OS-level cleanup of `/tmp` is the standard and reliable mechanism. Explicit `unlink` would require try/finally plumbing through multiple layers — disproportionate for this feature scope.
 
 **Alternatives considered**:
 - Explicit `unlink` in `ShippingEngine.run` with try/finally — deferred: acceptable enhancement in a follow-up.

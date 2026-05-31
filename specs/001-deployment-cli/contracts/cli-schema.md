@@ -1,34 +1,35 @@
-# CLI Contract: `carburetor`
+# CLI Contract: "`meg`"
 
 **Feature**: `001-deployment-cli`  
 **Phase**: 1 — Design  
 **Date**: 2026-04-11
 
-This document defines the public contract for the `carburetor` CLI tool — the interface the `DeployCLI` client exposes to users and CI systems.
+This document defines the public contract for the "`meg`" CLI tool — the interface the `DeployCLI` client exposes to users and CI systems.
 
 ---
 
 ## Command Structure
 
 ```
-carburetor <command> [options]
+megalodon <command> [options]
 ```
 
 ---
 
 ## Commands
 
-### `carburetor deploy`
+### "`meg deploy`"
 
 Deploy an application to a cloud platform.
 
 ```
-carburetor deploy [options]
+meg deploy [options]
 
 Options:
-  -c, --config <path>      Path to carburetor.yml (default: ./carburetor.yml)
+  -c, --config <path>      Path to megalodon.yml (default: ./meg.yml)
   -t, --target <platform>  Override target platform: aws | gcp | azure | lambda
   -e, --env <name>         Override environment: production | staging | preview
+      --dockerfile <path>  Path to Dockerfile — enables Docker EC2 deploy mode; container always serves on port 80
       --dry-run            Validate config and credentials without deploying
       --json               Emit newline-delimited JSON events (for CI/log aggregators)
   -v, --verbose            Show full command output for each step
@@ -46,26 +47,26 @@ Options:
 
 ---
 
-### `carburetor validate`
+### "`meg validate`"
 
-Validate `carburetor.yml` and cloud credentials without deploying.
+Validate `megalodon.yml` and cloud credentials without deploying.
 
 ```
-carburetor validate [options]
+meg validate [options]
 
 Options:
-  -c, --config <path>   Path to carburetor.yml (default: ./carburetor.yml)
+  -c, --config <path>   Path to megalodon.yml (default: ./meg.yml)
   -h, --help            Show help
 ```
 
 ---
 
-### `carburetor version`
+### "`meg version`"
 
 Print the installed version.
 
 ```
-carburetor version
+meg version
 ```
 
 ---
@@ -75,7 +76,7 @@ carburetor version
 ### Human-readable (default TTY mode)
 
 ```
-carburetor v1.0.0
+megalodon v1.0.0
 
 [1/5] Validating credentials...           ✓  (0.3s)
 [2/5] Fetching source from GitHub...      ✓  (4.1s)
@@ -95,7 +96,7 @@ On failure:
 [2/5] Fetching source from GitHub...      ✗  Failed
 
 Error: Repository not found or access denied
-  → Check that carburetor_VCS_TOKEN is set and has 'repo' scope
+  → Check that megalodon_VCS_TOKEN is set and has 'repo' scope
   → Repo: https://github.com/org/repo
 
 Exit code: 1
@@ -120,7 +121,7 @@ One JSON object per line (newline-delimited JSON / NDJSON):
 
 ---
 
-## Configuration File Contract (`carburetor.yml`)
+## Configuration File Contract (`megalodon.yml`)
 
 ```yaml
 # All fields unless marked optional are required
@@ -150,7 +151,7 @@ vcs:
 
 | Platform | Variable | Description |
 |----------|----------|-------------|
-| All VCS | `carburetor_VCS_TOKEN` | Personal access token |
+| All VCS | `megalodon_VCS_TOKEN` | Personal access token |
 | AWS | `AWS_ACCESS_KEY_ID` | AWS access key |
 | AWS | `AWS_SECRET_ACCESS_KEY` | AWS secret |
 | AWS | `AWS_SESSION_TOKEN` | Optional session token |
