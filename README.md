@@ -1,4 +1,4 @@
-# megalodon
+# <img src="assets/logo.png" alt="" height="48" style="vertical-align:middle;" /> Megalodon
 
 Deploy applications to cloud platforms with a single command. megalodon handles cloning your source code, running the build pipeline, and shipping the artifact to the cloud — no manual steps.
 
